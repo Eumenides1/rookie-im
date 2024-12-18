@@ -1,0 +1,32 @@
+server:
+  servlet:
+    context-path: /rookie/v1
+spring:
+  application:
+    name: rookie-im
+  profiles:
+    active: dev
+  datasource:
+    url: jdbc:mysql://${rookie-im.mysql.ip}:${rookie-im.mysql.port}/${rookie-im.mysql.db}?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    username: ${rookie-im.mysql.username}
+    password: ${rookie-im.mysql.password}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      minimum-idle: 3
+      maximum-pool-size: 10
+      max-lifetime: 30000   #不能小于30秒，否则默认回到1800秒
+      connection-test-query: SELECT 1
+  mvc:
+    pathmatch:
+      matching-strategy: ANT_PATH_MATCHER
+
+mybatis-plus:
+  mapper-locations: classpath:mappers/**/*.xml
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true
+
+#################  日志相关配置 ###################
+logging:
+  level:
+    org.springframework.web: INFO

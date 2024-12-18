@@ -16,5 +16,7 @@ CREATE TABLE `im_user_data`  (
      `user_type` int(10) NOT NULL DEFAULT 1 COMMENT '用户类型 1普通用户 2客服 3机器人',
      `del_flag` int(20) NOT NULL DEFAULT 0,
      `extra` JSON NULL COMMENT '扩展字段，存储 JSON 格式的数据',
+     `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+     `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
      PRIMARY KEY (`app_id`, `user_id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;

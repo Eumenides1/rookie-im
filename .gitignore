@@ -39,3 +39,9 @@ build/
 
 .idea/
 ,mvn/
+
+logs/
+
+application-dev.properties
+
+MyBatisGenerate.java
