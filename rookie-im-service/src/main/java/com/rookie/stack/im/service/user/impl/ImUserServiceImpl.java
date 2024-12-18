@@ -1,6 +1,7 @@
 package com.rookie.stack.im.service.user.impl;
 
 import com.rookie.stack.im.common.exception.AppIdMissingException;
+import com.rookie.stack.im.common.utils.UserIdGenerator;
 import com.rookie.stack.im.dao.user.ImUserDataDao;
 import com.rookie.stack.im.domain.entity.ImUserData;
 import com.rookie.stack.im.domain.vo.req.user.ImportUserReq;
@@ -39,8 +40,8 @@ public class ImUserServiceImpl implements ImUserService {
 
     @Override
     public ImportUserResp importUsers(ImportUserReq importUserReq) {
-        List<String> successId = new ArrayList<>();
-        List<String> failedId = new ArrayList<>();
+        List<Long> successId = new ArrayList<>();
+        List<Long> failedId = new ArrayList<>();
 
         // 获取 AppId （注解已经校验过了，所以这里不会为空）但是还是校验下
         String appIdHeader = request.getHeader("AppId");
@@ -60,6 +61,7 @@ public class ImUserServiceImpl implements ImUserService {
             tasks.add(() -> {
                 for (ImUserData imUserData : batch) {
                     try {
+                        imUserData.setUserId(UserIdGenerator.generate(appId));
                         // 设置 appId
                         imUserData.setAppId(appId);
                         boolean save = imUserDataDao.save(imUserData);

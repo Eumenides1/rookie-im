@@ -12,6 +12,6 @@ import java.util.List;
  */
 @Data
 public class ImportUserResp {
-    private List<String> successUsers;
-    private List<String> failUsers;
+    private List<Long> successUsers;
+    private List<Long> failUsers;
 }

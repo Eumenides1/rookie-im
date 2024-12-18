@@ -20,3 +20,12 @@ CREATE TABLE `im_user_data`  (
      `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
      PRIMARY KEY (`app_id`, `user_id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+-- 删除主键
+ALTER TABLE im_user_data DROP PRIMARY KEY;
+
+-- 修改 user_id 字段类型为 BIGINT
+ALTER TABLE im_user_data MODIFY user_id BIGINT NOT NULL;
+
+-- 重新添加联合主键
+ALTER TABLE im_user_data ADD PRIMARY KEY (app_id, user_id);

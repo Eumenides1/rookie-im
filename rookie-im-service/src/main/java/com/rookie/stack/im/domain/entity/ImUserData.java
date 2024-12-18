@@ -25,7 +25,7 @@ public class ImUserData implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @TableId("user_id")
-    private String userId;
+    private Long userId;
 
     @TableField("app_id")
     private Integer appId;
