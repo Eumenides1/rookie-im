@@ -1,5 +1,6 @@
 package com.rookie.stack.im.common.exception.handler;
 
+import com.rookie.stack.im.common.exception.AppIdMissingException;
 import com.rookie.stack.im.common.exception.BusinessException;
 import com.rookie.stack.im.common.exception.CommonErrorEnum;
 import com.rookie.stack.im.domain.vo.resp.ApiResult;
@@ -48,6 +49,18 @@ public class GlobalExceptionHandler {
     public ApiResult systemExceptionHandler(Exception e) {
         log.error("system exception！The reason is：{}", e.getMessage(), e);
         return ApiResult.fail(CommonErrorEnum.SYSTEM_ERROR);
+    }
+
+    /**
+     * 未携带 AppID 异常
+     * @param ex
+     * @return
+     */
+    @ExceptionHandler(AppIdMissingException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiResult handleAppIdMissingException(AppIdMissingException ex) {
+        log.error("method miss AppId {}", ex.getMessage());
+        return ApiResult.fail(CommonErrorEnum.MISS_APPID);
     }
 
 

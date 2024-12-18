@@ -1,5 +1,6 @@
 package com.rookie.stack.im.controller.user;
 
+import com.rookie.stack.im.common.annotations.SkipAppIdValidation;
 import com.rookie.stack.im.common.exception.BusinessException;
 import com.rookie.stack.im.common.exception.user.ImUserErrorEnum;
 import com.rookie.stack.im.domain.vo.req.user.ImportUserReq;

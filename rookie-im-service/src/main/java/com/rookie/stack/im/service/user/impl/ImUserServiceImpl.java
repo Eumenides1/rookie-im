@@ -1,11 +1,13 @@
 package com.rookie.stack.im.service.user.impl;
 
+import com.rookie.stack.im.common.exception.AppIdMissingException;
 import com.rookie.stack.im.dao.user.ImUserDataDao;
 import com.rookie.stack.im.domain.entity.ImUserData;
 import com.rookie.stack.im.domain.vo.req.user.ImportUserReq;
 import com.rookie.stack.im.domain.vo.resp.user.ImportUserResp;
 import com.rookie.stack.im.service.user.ImUserService;
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -27,13 +29,25 @@ public class ImUserServiceImpl implements ImUserService {
 
     private final static Integer EXECUTOR_COUNT = 10;
 
-    @Resource
-    private ImUserDataDao imUserDataDao;
+    private final ImUserDataDao imUserDataDao;
+    private final HttpServletRequest request;
+
+    public ImUserServiceImpl(ImUserDataDao imUserDataDao, HttpServletRequest request) {
+        this.imUserDataDao = imUserDataDao;
+        this.request = request;
+    }
 
     @Override
     public ImportUserResp importUsers(ImportUserReq importUserReq) {
         List<String> successId = new ArrayList<>();
         List<String> failedId = new ArrayList<>();
+
+        // 获取 AppId （注解已经校验过了，所以这里不会为空）但是还是校验下
+        String appIdHeader = request.getHeader("AppId");
+        if (appIdHeader == null) {
+            throw new AppIdMissingException("AppId is missing in request header");
+        }
+        Integer appId = Integer.parseInt(appIdHeader); // 假设 appId 为 Long 类型，如果是其它类型，需要转换
 
         // 线程池用于并发处理导入
         ExecutorService executor = Executors.newFixedThreadPool(EXECUTOR_COUNT);  // 线程池大小可以根据实际情况调整
@@ -46,6 +60,8 @@ public class ImUserServiceImpl implements ImUserService {
             tasks.add(() -> {
                 for (ImUserData imUserData : batch) {
                     try {
+                        // 设置 appId
+                        imUserData.setAppId(appId);
                         boolean save = imUserDataDao.save(imUserData);
                         if (save) {
                             successId.add(imUserData.getUserId());

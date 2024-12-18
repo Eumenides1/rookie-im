@@ -1,7 +1,6 @@
 package com.rookie.stack.im.domain.vo.req.user;
 
 import com.rookie.stack.im.domain.entity.ImUserData;
-import com.rookie.stack.im.domain.vo.req.BaseRequest;
 import lombok.Data;
 
 import java.util.List;
@@ -13,6 +12,6 @@ import java.util.List;
  * Description:
  */
 @Data
-public class ImportUserReq extends BaseRequest {
+public class ImportUserReq {
     List<ImUserData> userData;
 }
