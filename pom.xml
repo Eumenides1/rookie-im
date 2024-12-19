@@ -31,6 +31,7 @@
         <mysql-connector.version>8.0.29</mysql-connector.version>
         <velocity.version>2.0</velocity.version>
         <hutool.version>5.8.16</hutool.version>
+        <spring.doc.version>2.2.0</spring.doc.version>
     </properties>
 
     <dependencyManagement>
@@ -65,7 +66,11 @@
                 <artifactId>lombok</artifactId>
                 <version>${lombok.version}</version>
             </dependency>
-            <!--单元测试-->
+            <dependency>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+                <version>${spring.doc.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

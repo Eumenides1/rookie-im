@@ -29,3 +29,13 @@ ALTER TABLE im_user_data MODIFY user_id BIGINT NOT NULL;
 
 -- 重新添加联合主键
 ALTER TABLE im_user_data ADD PRIMARY KEY (app_id, user_id);
+
+
+-- 新增手机号字段
+ALTER TABLE im_user_data ADD COLUMN `phone` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '手机号';
+
+-- 新增邮箱字段
+ALTER TABLE im_user_data ADD COLUMN `email` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '邮箱';
+
+alter table im_user_data
+    modify del_flag int default 0 not null comment '用户状态：已删除 2；未删除 3';

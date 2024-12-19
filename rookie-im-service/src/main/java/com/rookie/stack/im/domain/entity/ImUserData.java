@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -42,11 +44,17 @@ public class ImUserData implements Serializable {
     @TableField("photo")
     private String photo;
 
+    @TableField("email")
+    private String email;
+
+    @TableField("phone")
+    private String phone;
+
     /**
      * 性别（1:男，2:女，3:其他）
      */
     @TableField("user_sex")
-    private Boolean userSex;
+    private Integer userSex;
 
     /**
      * 生日

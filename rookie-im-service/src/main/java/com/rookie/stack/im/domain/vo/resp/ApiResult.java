@@ -1,6 +1,7 @@
 package com.rookie.stack.im.domain.vo.resp;
 
 import com.rookie.stack.im.common.exception.ErrorEnum;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
@@ -10,14 +11,15 @@ import lombok.Data;
  * Description:
  */
 @Data
+@Schema(description = "通用接口返回体")
 public class ApiResult<T> {
-
+    @Schema(description = "操作是否成功")
     private Boolean success;
-
+    @Schema(description = "异常码")
     private Integer errCode;
-
+    @Schema(description = "异常信息")
     private String errMsg;
-
+    @Schema(description = "数据返回体")
     private T data;
     public static <T> ApiResult<T> success() {
         ApiResult<T> result = new ApiResult<T>();

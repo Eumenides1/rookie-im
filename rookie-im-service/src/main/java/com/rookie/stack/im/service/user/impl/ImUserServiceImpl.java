@@ -4,9 +4,11 @@ import com.rookie.stack.im.common.exception.AppIdMissingException;
 import com.rookie.stack.im.common.utils.UserIdGenerator;
 import com.rookie.stack.im.dao.user.ImUserDataDao;
 import com.rookie.stack.im.domain.entity.ImUserData;
+import com.rookie.stack.im.domain.vo.req.user.ImportUserData;
 import com.rookie.stack.im.domain.vo.req.user.ImportUserReq;
 import com.rookie.stack.im.domain.vo.resp.user.ImportUserResp;
 import com.rookie.stack.im.service.user.ImUserService;
+import com.rookie.stack.im.service.user.adapter.ImUserAdapter;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -54,16 +56,14 @@ public class ImUserServiceImpl implements ImUserService {
         ExecutorService executor = Executors.newFixedThreadPool(EXECUTOR_COUNT);  // 线程池大小可以根据实际情况调整
         List<Callable<Void>> tasks = new ArrayList<>();
         // 将用户数据分批处理，每批 100 条
-        List<List<ImUserData>> userDataBatches = partitionList(importUserReq.getUserData(), MAX_IMPORT_COUNT);
+        List<List<ImportUserData>> userDataBatches = partitionList(importUserReq.getUserData(), MAX_IMPORT_COUNT);
 
         // 创建并发任务
-        for (List<ImUserData> batch : userDataBatches) {
+        for (List<ImportUserData> batch : userDataBatches) {
             tasks.add(() -> {
-                for (ImUserData imUserData : batch) {
+                for (ImportUserData importUserData : batch) {
+                    ImUserData imUserData = ImUserAdapter.buildImUserData(importUserData, appId);
                     try {
-                        imUserData.setUserId(UserIdGenerator.generate(appId));
-                        // 设置 appId
-                        imUserData.setAppId(appId);
                         boolean save = imUserDataDao.save(imUserData);
                         if (save) {
                             successId.add(imUserData.getUserId());
@@ -97,8 +97,8 @@ public class ImUserServiceImpl implements ImUserService {
         return importUserResp;
     }
     // 分批方法，将用户数据拆分成多个小批次
-    private List<List<ImUserData>> partitionList(List<ImUserData> list, int batchSize) {
-        List<List<ImUserData>> batches = new ArrayList<>();
+    private List<List<ImportUserData>> partitionList(List<ImportUserData> list, int batchSize) {
+        List<List<ImportUserData>> batches = new ArrayList<>();
         for (int i = 0; i < list.size(); i += batchSize) {
             batches.add(new ArrayList<>(list.subList(i, Math.min(i + batchSize, list.size()))));
         }

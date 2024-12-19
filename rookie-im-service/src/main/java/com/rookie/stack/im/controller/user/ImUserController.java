@@ -7,6 +7,8 @@ import com.rookie.stack.im.domain.vo.req.user.ImportUserReq;
 import com.rookie.stack.im.domain.vo.resp.ApiResult;
 import com.rookie.stack.im.domain.vo.resp.user.ImportUserResp;
 import com.rookie.stack.im.service.user.ImUserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,12 +26,14 @@ import static com.rookie.stack.im.service.user.impl.ImUserServiceImpl.MAX_IMPORT
  */
 @RestController
 @RequestMapping("/im_user")
+@Tag(name = "【IM_USER】用户资料相关功能", description = "用户资料相关功能控制层")
 public class ImUserController {
 
     @Resource
     private ImUserService imUserService;
 
     @PostMapping("/import")
+    @Operation(summary = "批量导入用户资料接口")
     public ApiResult<ImportUserResp> importUsers(@RequestBody ImportUserReq importUserReq) {
         if (importUserReq.getUserData().size() > MAX_IMPORT_COUNT) {
             // 返回导入数量过多异常
