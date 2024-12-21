@@ -1,10 +1,10 @@
 package com.rookie.stack.im.service.user;
 
-import com.rookie.stack.im.domain.vo.req.base.PageBaseReq;
 import com.rookie.stack.im.domain.vo.req.user.GetUserListPageReq;
 import com.rookie.stack.im.domain.vo.req.user.ImportUserReq;
-import com.rookie.stack.im.domain.vo.resp.base.BaseUserInfo;
+import com.rookie.stack.im.domain.vo.req.user.UpdateUserInfoReq;
 import com.rookie.stack.im.domain.vo.resp.base.PageBaseResp;
+import com.rookie.stack.im.domain.vo.resp.user.GetUserInfoResp;
 import com.rookie.stack.im.domain.vo.resp.user.ImportUserResp;
 
 /**
@@ -19,8 +19,16 @@ public interface ImUserService {
      * @param importUserReq
      */
     ImportUserResp importUsers(ImportUserReq importUserReq);
+    /**
+     * 查询批量用户信息接口
+     * @param getUserListPageReq
+     */
+    PageBaseResp<GetUserInfoResp> queryUsers(GetUserListPageReq getUserListPageReq);
+    /**
+     * 根据 userId 获取用户信息
+     * @param userId
+     */
+    GetUserInfoResp queryUserById(Long userId);
 
-    PageBaseResp<BaseUserInfo> queryUsers(GetUserListPageReq getUserListPageReq);
-
-    BaseUserInfo queryUserById(Long userId);
+    void updateUserInfo(UpdateUserInfoReq req);
 }

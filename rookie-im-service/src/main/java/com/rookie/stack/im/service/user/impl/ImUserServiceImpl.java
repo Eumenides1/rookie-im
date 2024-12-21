@@ -4,15 +4,18 @@ import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.rookie.stack.im.common.context.AppIdContext;
 import com.rookie.stack.im.common.exception.AppIdMissingException;
+import com.rookie.stack.im.common.exception.BusinessException;
+import com.rookie.stack.im.common.exception.user.ImUserErrorEnum;
 import com.rookie.stack.im.common.utils.AssertUtil;
 import com.rookie.stack.im.dao.user.ImUserDataDao;
 import com.rookie.stack.im.domain.entity.ImUserData;
-import com.rookie.stack.im.domain.vo.req.base.PageBaseReq;
+import com.rookie.stack.im.domain.enums.ImUserStatusEnum;
 import com.rookie.stack.im.domain.vo.req.user.GetUserListPageReq;
 import com.rookie.stack.im.domain.vo.req.user.ImportUserData;
 import com.rookie.stack.im.domain.vo.req.user.ImportUserReq;
-import com.rookie.stack.im.domain.vo.resp.base.BaseUserInfo;
+import com.rookie.stack.im.domain.vo.req.user.UpdateUserInfoReq;
 import com.rookie.stack.im.domain.vo.resp.base.PageBaseResp;
+import com.rookie.stack.im.domain.vo.resp.user.GetUserInfoResp;
 import com.rookie.stack.im.domain.vo.resp.user.ImportUserResp;
 import com.rookie.stack.im.service.user.ImUserService;
 import com.rookie.stack.im.service.user.adapter.ImUserAdapter;
@@ -22,6 +25,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.*;
 
 /**
@@ -97,7 +101,7 @@ public class ImUserServiceImpl implements ImUserService {
     }
 
     @Override
-    public PageBaseResp<BaseUserInfo> queryUsers(GetUserListPageReq getUserListPageReq) {
+    public PageBaseResp<GetUserInfoResp> queryUsers(GetUserListPageReq getUserListPageReq) {
         Integer appId = AppIdContext.getAppId();
         IPage<ImUserData> imUserDataIPage = imUserDataDao.getUserInfoPage(appId, getUserListPageReq);
 
@@ -108,11 +112,24 @@ public class ImUserServiceImpl implements ImUserService {
     }
 
     @Override
-    public BaseUserInfo queryUserById(Long userId) {
+    public GetUserInfoResp queryUserById(Long userId) {
         Integer appId = AppIdContext.getAppId();
         ImUserData userInfoById = imUserDataDao.getUserInfoById(appId, userId);
         AssertUtil.isNotEmpty(userInfoById, "用户信息不存在！");
         return ImUserAdapter.buildBaseUserInfo(userInfoById);
+    }
+
+    @Override
+    public void updateUserInfo(UpdateUserInfoReq req) {
+        Integer appId = AppIdContext.getAppId();
+        // 判断用户信息有效性
+        ImUserData userInfoById = imUserDataDao.getUserInfoById(appId, req.getUserId());
+        AssertUtil.isNotEmpty(userInfoById, "用户信息不存在！");
+        // 用户状态需要为启用状态
+        if (!Objects.equals(userInfoById.getForbiddenFlag(), ImUserStatusEnum.ENABLED.getStatus())) {
+            throw new BusinessException(ImUserErrorEnum.USER_STATUS_ERROR);
+        }
+        imUserDataDao.updateUserInfoById(appId, req);
     }
 
     // 分批方法，将用户数据拆分成多个小批次

@@ -1,15 +1,17 @@
 package com.rookie.stack.im.dao.user;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.rookie.stack.im.domain.entity.ImUserData;
 import com.rookie.stack.im.domain.vo.req.user.GetUserListPageReq;
+import com.rookie.stack.im.domain.vo.req.user.UpdateUserInfoReq;
 import com.rookie.stack.im.mapper.ImUserDataMapper;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 /**
  * Name：ImUserDataDao
@@ -36,6 +38,12 @@ public class ImUserDataDao extends ServiceImpl<ImUserDataMapper, ImUserData> {
                 .eq(ImUserData::getAppId, appId)
                 .eq(ImUserData::getUserId, userId)
                 .one();
+    }
+
+    public void updateUserInfoById(Integer appId, UpdateUserInfoReq req) {
+        ImUserData imUserData = new ImUserData();
+        BeanUtils.copyProperties(req, imUserData);
+        this.updateById(imUserData);
     }
 
 }

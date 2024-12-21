@@ -3,12 +3,12 @@ package com.rookie.stack.im.controller.user;
 import com.google.protobuf.Api;
 import com.rookie.stack.im.common.exception.BusinessException;
 import com.rookie.stack.im.common.exception.user.ImUserErrorEnum;
-import com.rookie.stack.im.domain.vo.req.base.PageBaseReq;
 import com.rookie.stack.im.domain.vo.req.user.GetUserListPageReq;
 import com.rookie.stack.im.domain.vo.req.user.ImportUserReq;
+import com.rookie.stack.im.domain.vo.req.user.UpdateUserInfoReq;
 import com.rookie.stack.im.domain.vo.resp.base.ApiResult;
-import com.rookie.stack.im.domain.vo.resp.base.BaseUserInfo;
 import com.rookie.stack.im.domain.vo.resp.base.PageBaseResp;
+import com.rookie.stack.im.domain.vo.resp.user.GetUserInfoResp;
 import com.rookie.stack.im.domain.vo.resp.user.ImportUserResp;
 import com.rookie.stack.im.service.user.ImUserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -47,12 +47,18 @@ public class ImUserController {
     }
     @PostMapping("/list")
     @Operation(summary = "获取用户信息列表接口")
-    public ApiResult<PageBaseResp<BaseUserInfo>> listUsers(@RequestBody @Valid GetUserListPageReq pageBaseReq) {
+    public ApiResult<PageBaseResp<GetUserInfoResp>> listUsers(@RequestBody @Valid GetUserListPageReq pageBaseReq) {
         return ApiResult.success(imUserService.queryUsers(pageBaseReq));
     }
     @GetMapping("/{userId}")
     @Operation(summary = "获取单个用户资料详情接口")
-    public ApiResult<BaseUserInfo> getUserInfo(@PathVariable Long userId) {
+    public ApiResult<GetUserInfoResp> getUserInfo(@PathVariable Long userId) {
         return ApiResult.success(imUserService.queryUserById(userId));
+    }
+    @PostMapping("/update")
+    @Operation(summary = "更新用户资料接口")
+    public ApiResult<Void> updateUserInfo(@RequestBody @Valid UpdateUserInfoReq updateUserInfoReq) {
+        imUserService.updateUserInfo(updateUserInfoReq);
+        return ApiResult.success();
     }
 }

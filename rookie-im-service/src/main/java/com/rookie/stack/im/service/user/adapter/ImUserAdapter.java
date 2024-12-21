@@ -4,7 +4,7 @@ import com.rookie.stack.im.common.utils.UserIdGenerator;
 import com.rookie.stack.im.domain.entity.ImUserData;
 import com.rookie.stack.im.domain.enums.ImUserStatusEnum;
 import com.rookie.stack.im.domain.vo.req.user.ImportUserData;
-import com.rookie.stack.im.domain.vo.resp.base.BaseUserInfo;
+import com.rookie.stack.im.domain.vo.resp.user.GetUserInfoResp;
 import org.springframework.beans.BeanUtils;
 
 import java.util.List;
@@ -28,15 +28,15 @@ public class ImUserAdapter {
         return imUserData;
     }
 
-    public static List<BaseUserInfo> buildBaseUserInfo(List<ImUserData> importUserDataList) {
+    public static List<GetUserInfoResp> buildBaseUserInfo(List<ImUserData> importUserDataList) {
         return importUserDataList.stream()
                 .map(ImUserAdapter::buildBaseUserInfo)
                 .collect(Collectors.toList());
     }
 
-    public static BaseUserInfo buildBaseUserInfo(ImUserData imUserData) {
-        BaseUserInfo baseUserInfo = new BaseUserInfo();
-        BeanUtils.copyProperties(imUserData, baseUserInfo); // 直接复制相同名称的属性
-        return baseUserInfo;
+    public static GetUserInfoResp buildBaseUserInfo(ImUserData imUserData) {
+        GetUserInfoResp getUserInfoResp = new GetUserInfoResp();
+        BeanUtils.copyProperties(imUserData, getUserInfoResp); // 直接复制相同名称的属性
+        return getUserInfoResp;
     }
 }
