@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.rookie.stack.im.domain.entity.ImUserData;
+import com.rookie.stack.im.domain.enums.ImUserStatusEnum;
 import com.rookie.stack.im.domain.vo.req.user.GetUserListPageReq;
 import com.rookie.stack.im.domain.vo.req.user.UpdateUserInfoReq;
 import com.rookie.stack.im.mapper.ImUserDataMapper;
@@ -26,6 +27,7 @@ public class ImUserDataDao extends ServiceImpl<ImUserDataMapper, ImUserData> {
         Page page = req.plusPage();
         LambdaQueryWrapper<ImUserData> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(ImUserData::getAppId, appId) // 必选条件
+                .eq(ImUserData::getDelFlag, ImUserStatusEnum.NOT_DELETED.getStatus())
                 .eq(req.getFriendAllowType() != null, ImUserData::getFriendAllowType, req.getFriendAllowType())
                 .eq(req.getDisableAddFriend() != null, ImUserData::getDisableAddFriend, req.getDisableAddFriend())
                 .eq(req.getUserType() != null, ImUserData::getUserType, req.getUserType())
@@ -46,4 +48,10 @@ public class ImUserDataDao extends ServiceImpl<ImUserDataMapper, ImUserData> {
         this.updateById(imUserData);
     }
 
+    public void deleteUserInfoById(Integer appId, Long userId) {
+        ImUserData imUserData = new ImUserData();
+        imUserData.setUserId(userId);
+        imUserData.setDelFlag(ImUserStatusEnum.DELETED.getStatus());
+        this.updateById(imUserData);
+    }
 }

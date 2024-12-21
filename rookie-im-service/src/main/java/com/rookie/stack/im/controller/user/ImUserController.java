@@ -61,4 +61,11 @@ public class ImUserController {
         imUserService.updateUserInfo(updateUserInfoReq);
         return ApiResult.success();
     }
+    @DeleteMapping("/delete/{userId}")
+    @Operation(summary = "删除用户资料接口")
+    public ApiResult<Void> deleteUser(@PathVariable Long userId) {
+        imUserService.deleteUserById(userId);
+        return ApiResult.success();
+    }
+
 }

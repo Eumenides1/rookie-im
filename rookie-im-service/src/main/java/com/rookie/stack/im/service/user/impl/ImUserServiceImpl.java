@@ -132,6 +132,19 @@ public class ImUserServiceImpl implements ImUserService {
         imUserDataDao.updateUserInfoById(appId, req);
     }
 
+    @Override
+    public void deleteUserById(Long userId) {
+        Integer appId = AppIdContext.getAppId();
+        // 判断用户信息有效性
+        ImUserData userInfoById = imUserDataDao.getUserInfoById(appId, userId);
+        AssertUtil.isNotEmpty(userInfoById, "用户信息不存在！");
+        // 用户状态需要为启用状态
+        if (!Objects.equals(userInfoById.getDelFlag(), ImUserStatusEnum.NOT_DELETED.getStatus())) {
+            throw new BusinessException(ImUserErrorEnum.USER_STATUS_ERROR);
+        }
+        imUserDataDao.deleteUserInfoById(appId, userId);
+    }
+
     // 分批方法，将用户数据拆分成多个小批次
     private List<List<ImportUserData>> partitionList(List<ImportUserData> list, int batchSize) {
         List<List<ImportUserData>> batches = new ArrayList<>();

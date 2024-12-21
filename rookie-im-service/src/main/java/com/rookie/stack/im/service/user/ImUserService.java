@@ -30,5 +30,15 @@ public interface ImUserService {
      */
     GetUserInfoResp queryUserById(Long userId);
 
+    /**
+     * 更新用户信息
+     * @param req
+     */
     void updateUserInfo(UpdateUserInfoReq req);
+
+    /**
+     * 删除用户信息
+     * @param userId
+     */
+    void deleteUserById(Long userId);
 }
