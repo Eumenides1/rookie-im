@@ -30,11 +30,13 @@ public class ImUserAdapter {
 
     public static List<BaseUserInfo> buildBaseUserInfo(List<ImUserData> importUserDataList) {
         return importUserDataList.stream()
-                .map(imUserData -> {
-                    BaseUserInfo baseUserInfo = new BaseUserInfo();
-                    BeanUtils.copyProperties(imUserData, baseUserInfo); // 直接复制相同名称的属性
-                    return baseUserInfo;
-                })
+                .map(ImUserAdapter::buildBaseUserInfo)
                 .collect(Collectors.toList());
+    }
+
+    public static BaseUserInfo buildBaseUserInfo(ImUserData imUserData) {
+        BaseUserInfo baseUserInfo = new BaseUserInfo();
+        BeanUtils.copyProperties(imUserData, baseUserInfo); // 直接复制相同名称的属性
+        return baseUserInfo;
     }
 }

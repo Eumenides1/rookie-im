@@ -1,6 +1,7 @@
 package com.rookie.stack.im.common.interceptor;
 
 import com.rookie.stack.im.common.annotations.SkipAppIdValidation;
+import com.rookie.stack.im.common.context.AppIdContext;
 import com.rookie.stack.im.common.exception.AppIdMissingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -39,7 +40,7 @@ public class AppIdInterceptor implements HandlerInterceptor {
         if (appId == null || appId.isEmpty()) {
             throw new AppIdMissingException("AppId is missing");
         }
-
+        AppIdContext.setAppId(Integer.valueOf(appId)); // 将 AppId 存入 ThreadLocal
         return true; // 如果携带了 AppId，则继续处理请求
     }
 
@@ -47,5 +48,11 @@ public class AppIdInterceptor implements HandlerInterceptor {
     private boolean isSkipAppIdValidation(String requestURI) {
         // 假设 "/public" 路径下的请求不需要 AppId 校验
         return requestURI.startsWith("/v3") || requestURI.startsWith("/swagger-ui");
+    }
+
+    @Override
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
+        // 清理 ThreadLocal，避免内存泄漏
+        AppIdContext.clear();
     }
 }

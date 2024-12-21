@@ -31,4 +31,11 @@ public class ImUserDataDao extends ServiceImpl<ImUserDataMapper, ImUserData> {
         return this.page(page, queryWrapper);
     }
 
+    public ImUserData getUserInfoById(Integer appId, Long userId) {
+        return lambdaQuery()
+                .eq(ImUserData::getAppId, appId)
+                .eq(ImUserData::getUserId, userId)
+                .one();
+    }
+
 }

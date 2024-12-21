@@ -1,5 +1,6 @@
 package com.rookie.stack.im.controller.user;
 
+import com.google.protobuf.Api;
 import com.rookie.stack.im.common.exception.BusinessException;
 import com.rookie.stack.im.common.exception.user.ImUserErrorEnum;
 import com.rookie.stack.im.domain.vo.req.base.PageBaseReq;
@@ -14,10 +15,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import jakarta.validation.constraints.NotBlank;
+import org.springframework.web.bind.annotation.*;
 
 
 import static com.rookie.stack.im.service.user.impl.ImUserServiceImpl.MAX_IMPORT_COUNT;
@@ -47,8 +46,13 @@ public class ImUserController {
         return ApiResult.success(importUserResp);
     }
     @PostMapping("/list")
-    @Operation(summary = "获取用户信息接口")
+    @Operation(summary = "获取用户信息列表接口")
     public ApiResult<PageBaseResp<BaseUserInfo>> listUsers(@RequestBody @Valid GetUserListPageReq pageBaseReq) {
         return ApiResult.success(imUserService.queryUsers(pageBaseReq));
+    }
+    @GetMapping("/{userId}")
+    @Operation(summary = "获取单个用户资料详情接口")
+    public ApiResult<BaseUserInfo> getUserInfo(@PathVariable Long userId) {
+        return ApiResult.success(imUserService.queryUserById(userId));
     }
 }

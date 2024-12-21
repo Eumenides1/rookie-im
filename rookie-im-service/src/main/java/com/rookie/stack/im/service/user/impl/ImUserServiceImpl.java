@@ -2,7 +2,9 @@ package com.rookie.stack.im.service.user.impl;
 
 import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.rookie.stack.im.common.context.AppIdContext;
 import com.rookie.stack.im.common.exception.AppIdMissingException;
+import com.rookie.stack.im.common.utils.AssertUtil;
 import com.rookie.stack.im.dao.user.ImUserDataDao;
 import com.rookie.stack.im.domain.entity.ImUserData;
 import com.rookie.stack.im.domain.vo.req.base.PageBaseReq;
@@ -48,14 +50,7 @@ public class ImUserServiceImpl implements ImUserService {
     public ImportUserResp importUsers(ImportUserReq importUserReq) {
         List<Long> successId = new ArrayList<>();
         List<Long> failedId = new ArrayList<>();
-
-        // 获取 AppId （注解已经校验过了，所以这里不会为空）但是还是校验下
-        String appIdHeader = request.getHeader("AppId");
-        if (appIdHeader == null) {
-            throw new AppIdMissingException("AppId is missing in request header");
-        }
-        Integer appId = Integer.parseInt(appIdHeader); // 假设 appId 为 Long 类型，如果是其它类型，需要转换
-
+        Integer appId = AppIdContext.getAppId();
         // 线程池用于并发处理导入
         ExecutorService executor = Executors.newFixedThreadPool(EXECUTOR_COUNT);  // 线程池大小可以根据实际情况调整
         List<Callable<Void>> tasks = new ArrayList<>();
@@ -103,19 +98,21 @@ public class ImUserServiceImpl implements ImUserService {
 
     @Override
     public PageBaseResp<BaseUserInfo> queryUsers(GetUserListPageReq getUserListPageReq) {
-        // 获取 AppId （注解已经校验过了，所以这里不会为空）但是还是校验下
-        String appIdHeader = request.getHeader("AppId");
-        if (appIdHeader == null) {
-            throw new AppIdMissingException("AppId is missing in request header");
-        }
-        Integer appId = Integer.parseInt(appIdHeader); // 假设 appId 为 Long 类型，如果是其它类型，需要转换
-
+        Integer appId = AppIdContext.getAppId();
         IPage<ImUserData> imUserDataIPage = imUserDataDao.getUserInfoPage(appId, getUserListPageReq);
 
         if (CollectionUtil.isEmpty(imUserDataIPage.getRecords())) {
             return PageBaseResp.empty();
         }
         return PageBaseResp.init(imUserDataIPage, ImUserAdapter.buildBaseUserInfo(imUserDataIPage.getRecords()));
+    }
+
+    @Override
+    public BaseUserInfo queryUserById(Long userId) {
+        Integer appId = AppIdContext.getAppId();
+        ImUserData userInfoById = imUserDataDao.getUserInfoById(appId, userId);
+        AssertUtil.isNotEmpty(userInfoById, "用户信息不存在！");
+        return ImUserAdapter.buildBaseUserInfo(userInfoById);
     }
 
     // 分批方法，将用户数据拆分成多个小批次

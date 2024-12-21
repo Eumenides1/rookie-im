@@ -21,4 +21,6 @@ public interface ImUserService {
     ImportUserResp importUsers(ImportUserReq importUserReq);
 
     PageBaseResp<BaseUserInfo> queryUsers(GetUserListPageReq getUserListPageReq);
+
+    BaseUserInfo queryUserById(Long userId);
 }
