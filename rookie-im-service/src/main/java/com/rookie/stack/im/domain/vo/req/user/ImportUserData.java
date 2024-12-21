@@ -1,5 +1,6 @@
 package com.rookie.stack.im.domain.vo.req.user;
 
+import com.rookie.stack.im.domain.vo.resp.base.BaseUserInfo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -11,18 +12,9 @@ import lombok.Data;
  */
 @Data
 @Schema(description = "操作用户资料实体")
-public class ImportUserData {
-    private String nickName;
+public class ImportUserData extends BaseUserInfo {
+    /**
+     * 导入的时候需要传递 password
+     */
     private String password;
-    private String photo;
-    private Integer userSex;
-    private String phone;
-    private String email;
-    private String birthDay;
-    private String location;
-    private String selfSignature;
-    private Integer friendAllowType;
-    private Integer disableAddFriend;
-    private Integer userType;
-    private String extra;  // 存储 JSON 数据
 }

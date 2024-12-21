@@ -4,7 +4,11 @@ import com.rookie.stack.im.common.utils.UserIdGenerator;
 import com.rookie.stack.im.domain.entity.ImUserData;
 import com.rookie.stack.im.domain.enums.ImUserStatusEnum;
 import com.rookie.stack.im.domain.vo.req.user.ImportUserData;
+import com.rookie.stack.im.domain.vo.resp.base.BaseUserInfo;
 import org.springframework.beans.BeanUtils;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Name：ImUserAdapter
@@ -22,5 +26,15 @@ public class ImUserAdapter {
         imUserData.setForbiddenFlag(ImUserStatusEnum.ENABLED.getStatus());
         imUserData.setDelFlag(ImUserStatusEnum.NOT_DELETED.getStatus());
         return imUserData;
+    }
+
+    public static List<BaseUserInfo> buildBaseUserInfo(List<ImUserData> importUserDataList) {
+        return importUserDataList.stream()
+                .map(imUserData -> {
+                    BaseUserInfo baseUserInfo = new BaseUserInfo();
+                    BeanUtils.copyProperties(imUserData, baseUserInfo); // 直接复制相同名称的属性
+                    return baseUserInfo;
+                })
+                .collect(Collectors.toList());
     }
 }

@@ -1,15 +1,18 @@
 package com.rookie.stack.im.service.user.impl;
 
+import cn.hutool.core.collection.CollectionUtil;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.rookie.stack.im.common.exception.AppIdMissingException;
-import com.rookie.stack.im.common.utils.UserIdGenerator;
 import com.rookie.stack.im.dao.user.ImUserDataDao;
 import com.rookie.stack.im.domain.entity.ImUserData;
+import com.rookie.stack.im.domain.vo.req.base.PageBaseReq;
 import com.rookie.stack.im.domain.vo.req.user.ImportUserData;
 import com.rookie.stack.im.domain.vo.req.user.ImportUserReq;
+import com.rookie.stack.im.domain.vo.resp.base.BaseUserInfo;
+import com.rookie.stack.im.domain.vo.resp.base.PageBaseResp;
 import com.rookie.stack.im.domain.vo.resp.user.ImportUserResp;
 import com.rookie.stack.im.service.user.ImUserService;
 import com.rookie.stack.im.service.user.adapter.ImUserAdapter;
-import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -96,6 +99,24 @@ public class ImUserServiceImpl implements ImUserService {
 
         return importUserResp;
     }
+
+    @Override
+    public PageBaseResp<BaseUserInfo> queryUsers(PageBaseReq pageBaseReq) {
+        // 获取 AppId （注解已经校验过了，所以这里不会为空）但是还是校验下
+        String appIdHeader = request.getHeader("AppId");
+        if (appIdHeader == null) {
+            throw new AppIdMissingException("AppId is missing in request header");
+        }
+        Integer appId = Integer.parseInt(appIdHeader); // 假设 appId 为 Long 类型，如果是其它类型，需要转换
+
+        IPage<ImUserData> imUserDataIPage = imUserDataDao.getUserInfoPage(appId, pageBaseReq.plusPage());
+
+        if (CollectionUtil.isEmpty(imUserDataIPage.getRecords())) {
+            return PageBaseResp.empty();
+        }
+        return PageBaseResp.init(imUserDataIPage, ImUserAdapter.buildBaseUserInfo(imUserDataIPage.getRecords()));
+    }
+
     // 分批方法，将用户数据拆分成多个小批次
     private List<List<ImportUserData>> partitionList(List<ImportUserData> list, int batchSize) {
         List<List<ImportUserData>> batches = new ArrayList<>();

@@ -1,15 +1,18 @@
 package com.rookie.stack.im.controller.user;
 
-import com.rookie.stack.im.common.annotations.SkipAppIdValidation;
 import com.rookie.stack.im.common.exception.BusinessException;
 import com.rookie.stack.im.common.exception.user.ImUserErrorEnum;
+import com.rookie.stack.im.domain.vo.req.base.PageBaseReq;
 import com.rookie.stack.im.domain.vo.req.user.ImportUserReq;
-import com.rookie.stack.im.domain.vo.resp.ApiResult;
+import com.rookie.stack.im.domain.vo.resp.base.ApiResult;
+import com.rookie.stack.im.domain.vo.resp.base.BaseUserInfo;
+import com.rookie.stack.im.domain.vo.resp.base.PageBaseResp;
 import com.rookie.stack.im.domain.vo.resp.user.ImportUserResp;
 import com.rookie.stack.im.service.user.ImUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,5 +44,10 @@ public class ImUserController {
         }
         ImportUserResp importUserResp = imUserService.importUsers(importUserReq);
         return ApiResult.success(importUserResp);
+    }
+    @PostMapping("/list")
+    @Operation(summary = "获取用户信息接口")
+    public ApiResult<PageBaseResp<BaseUserInfo>> listUsers(@RequestBody @Valid PageBaseReq pageBaseReq) {
+        return ApiResult.success(imUserService.queryUsers(pageBaseReq));
     }
 }
