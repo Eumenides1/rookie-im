@@ -6,6 +6,7 @@ import com.rookie.stack.im.common.exception.AppIdMissingException;
 import com.rookie.stack.im.dao.user.ImUserDataDao;
 import com.rookie.stack.im.domain.entity.ImUserData;
 import com.rookie.stack.im.domain.vo.req.base.PageBaseReq;
+import com.rookie.stack.im.domain.vo.req.user.GetUserListPageReq;
 import com.rookie.stack.im.domain.vo.req.user.ImportUserData;
 import com.rookie.stack.im.domain.vo.req.user.ImportUserReq;
 import com.rookie.stack.im.domain.vo.resp.base.BaseUserInfo;
@@ -101,7 +102,7 @@ public class ImUserServiceImpl implements ImUserService {
     }
 
     @Override
-    public PageBaseResp<BaseUserInfo> queryUsers(PageBaseReq pageBaseReq) {
+    public PageBaseResp<BaseUserInfo> queryUsers(GetUserListPageReq getUserListPageReq) {
         // 获取 AppId （注解已经校验过了，所以这里不会为空）但是还是校验下
         String appIdHeader = request.getHeader("AppId");
         if (appIdHeader == null) {
@@ -109,7 +110,7 @@ public class ImUserServiceImpl implements ImUserService {
         }
         Integer appId = Integer.parseInt(appIdHeader); // 假设 appId 为 Long 类型，如果是其它类型，需要转换
 
-        IPage<ImUserData> imUserDataIPage = imUserDataDao.getUserInfoPage(appId, pageBaseReq.plusPage());
+        IPage<ImUserData> imUserDataIPage = imUserDataDao.getUserInfoPage(appId, getUserListPageReq);
 
         if (CollectionUtil.isEmpty(imUserDataIPage.getRecords())) {
             return PageBaseResp.empty();

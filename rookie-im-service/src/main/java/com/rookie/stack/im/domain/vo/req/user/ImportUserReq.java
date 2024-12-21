@@ -13,7 +13,7 @@ import java.util.List;
  * Description:
  */
 @Data
-@Schema(description = "批量导入用户请求参数")
+@Schema(description = "导入用户请求参数")
 public class ImportUserReq {
     List<ImportUserData> userData;
 }

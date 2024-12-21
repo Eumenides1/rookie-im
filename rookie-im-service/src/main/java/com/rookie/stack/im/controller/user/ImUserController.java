@@ -3,6 +3,7 @@ package com.rookie.stack.im.controller.user;
 import com.rookie.stack.im.common.exception.BusinessException;
 import com.rookie.stack.im.common.exception.user.ImUserErrorEnum;
 import com.rookie.stack.im.domain.vo.req.base.PageBaseReq;
+import com.rookie.stack.im.domain.vo.req.user.GetUserListPageReq;
 import com.rookie.stack.im.domain.vo.req.user.ImportUserReq;
 import com.rookie.stack.im.domain.vo.resp.base.ApiResult;
 import com.rookie.stack.im.domain.vo.resp.base.BaseUserInfo;
@@ -47,7 +48,7 @@ public class ImUserController {
     }
     @PostMapping("/list")
     @Operation(summary = "获取用户信息接口")
-    public ApiResult<PageBaseResp<BaseUserInfo>> listUsers(@RequestBody @Valid PageBaseReq pageBaseReq) {
+    public ApiResult<PageBaseResp<BaseUserInfo>> listUsers(@RequestBody @Valid GetUserListPageReq pageBaseReq) {
         return ApiResult.success(imUserService.queryUsers(pageBaseReq));
     }
 }
