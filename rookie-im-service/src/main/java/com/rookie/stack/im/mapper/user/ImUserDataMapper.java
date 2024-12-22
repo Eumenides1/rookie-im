@@ -1,8 +1,8 @@
-package com.rookie.stack.im.mapper;
+package com.rookie.stack.im.mapper.user;
 
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.rookie.stack.im.domain.entity.ImUserData;
+import com.rookie.stack.im.domain.entity.user.ImUserData;
 
 /**
  * <p>

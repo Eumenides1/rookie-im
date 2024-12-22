@@ -1,6 +1,5 @@
 package com.rookie.stack.im.controller.user;
 
-import com.google.protobuf.Api;
 import com.rookie.stack.im.common.exception.BusinessException;
 import com.rookie.stack.im.common.exception.user.ImUserErrorEnum;
 import com.rookie.stack.im.domain.vo.req.user.GetUserListPageReq;
@@ -15,7 +14,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -67,5 +65,4 @@ public class ImUserController {
         imUserService.deleteUserById(userId);
         return ApiResult.success();
     }
-
 }

@@ -1,16 +1,14 @@
 package com.rookie.stack.im.dao.user;
 
-import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.rookie.stack.im.domain.entity.ImUserData;
+import com.rookie.stack.im.domain.entity.user.ImUserData;
 import com.rookie.stack.im.domain.enums.ImUserStatusEnum;
 import com.rookie.stack.im.domain.vo.req.user.GetUserListPageReq;
 import com.rookie.stack.im.domain.vo.req.user.UpdateUserInfoReq;
-import com.rookie.stack.im.mapper.ImUserDataMapper;
+import com.rookie.stack.im.mapper.user.ImUserDataMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Repository;
 

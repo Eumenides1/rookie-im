@@ -1,4 +1,4 @@
-package com.rookie.stack.im.domain.entity;
+package com.rookie.stack.im.domain.entity.user;
 
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -7,7 +7,6 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 

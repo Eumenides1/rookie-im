@@ -1,7 +1,7 @@
 package com.rookie.stack.im.service.user;
 
 import com.rookie.stack.im.dao.user.ImUserDataDao;
-import com.rookie.stack.im.domain.entity.ImUserData;
+import com.rookie.stack.im.domain.entity.user.ImUserData;
 import com.rookie.stack.im.domain.vo.req.user.ImportUserReq;
 import com.rookie.stack.im.domain.vo.resp.user.ImportUserResp;
 import com.rookie.stack.im.service.user.impl.ImUserServiceImpl;
