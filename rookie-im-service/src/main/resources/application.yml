@@ -6,6 +6,9 @@ spring:
     name: rookie-im
   profiles:
     active: dev
+  banner:
+    charset: utf-8
+    location: banner.txt
   datasource:
     url: jdbc:mysql://${rookie-im.mysql.ip}:${rookie-im.mysql.port}/${rookie-im.mysql.db}?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
     username: ${rookie-im.mysql.username}

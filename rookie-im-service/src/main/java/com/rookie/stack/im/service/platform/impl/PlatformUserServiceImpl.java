@@ -31,12 +31,17 @@ public class PlatformUserServiceImpl implements PlatformUserService {
     @Override
     public void sendVerificationCode(String email) {
         String verifyKey = VERIFY_KEY_PREFIX + email;
-        // 生成验证码
-        String verificationCode = generateRandomCode(CODE_LENGTH);
-
-        // 保存验证码到 Redis
-        redisUtil.set(verifyKey, verificationCode, (long) CODE_EXPIRATION_SECONDS);
-
+        // 先获取下有没有，用户超时了会重新获取，那就直接返回
+        String storedCode = redisUtil.get(verifyKey);
+        String verificationCode = null;
+        if (storedCode != null) {
+            verificationCode = storedCode;
+        } else {
+            // 生成验证码
+            verificationCode = generateRandomCode(CODE_LENGTH);
+            // 保存验证码到 Redis
+            redisUtil.set(verifyKey, verificationCode, (long) CODE_EXPIRATION_SECONDS);
+        }
         // 发送邮件
         emailPushService.sendTemplate(
                 email,
