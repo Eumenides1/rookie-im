@@ -4,8 +4,10 @@ import jakarta.annotation.Resource;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -19,6 +21,36 @@ public class RedisUtil {
 
     @Resource(name = "stringRedisTemplate")
     private StringRedisTemplate redisTemplate;
+
+    private static final String SLIDING_WINDOW_LUA = "local key = KEYS[1]\n" +
+            "local limit = tonumber(ARGV[1])\n" +
+            "local now = tonumber(ARGV[2])\n" +
+            "local window = tonumber(ARGV[3])\n" +
+            "redis.call('ZREMRANGEBYSCORE', key, '-inf', now - window)\n" +
+            "local count = redis.call('ZCARD', key)\n" +
+            "if count < limit then\n" +
+            "    redis.call('ZADD', key, now, now)\n" +
+            "    redis.call('EXPIRE', key, window)\n" +
+            "    return 1\n" +
+            "else\n" +
+            "    return 0\n" +
+            "end";
+
+    /**
+     * 滑动窗口限流
+     *
+     * @param key      限流的维度
+     * @param limit    最大允许次数
+     * @param duration 时间窗口（秒）
+     * @return 是否允许请求
+     */
+    public boolean isAllowed(String key, int limit, int duration) {
+        long now = System.currentTimeMillis() / 1000; // 当前时间戳（秒）
+        DefaultRedisScript<Long> redisScript = new DefaultRedisScript<>(SLIDING_WINDOW_LUA, Long.class);
+        Long result = redisTemplate.execute(redisScript, Collections.singletonList(key),
+                String.valueOf(limit), String.valueOf(now), String.valueOf(duration));
+        return result == 1;
+    }
 
     /**
      * 设置字符串键值对

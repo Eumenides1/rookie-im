@@ -25,19 +25,12 @@ public class PlatformUserServiceImpl implements PlatformUserService {
     private RedisUtil redisUtil;
 
     private static final String VERIFY_KEY_PREFIX = "email:verify:";
-    private static final String LIMIT_KEY_PREFIX = "email:limit:";
     private static final int CODE_LENGTH = 6;
     private static final int CODE_EXPIRATION_SECONDS = 600; // 10分钟
-    private static final int SEND_LIMIT_SECONDS = 60; // 1分钟限流
 
     @Override
     public void sendVerificationCode(String email) {
-        String limitKey = LIMIT_KEY_PREFIX + email;
         String verifyKey = VERIFY_KEY_PREFIX + email;
-        // 限流检查
-        if (!redisUtil.rateLimit(limitKey, 1, SEND_LIMIT_SECONDS)) {
-            throw new IllegalArgumentException("发送过于频繁，请稍后再试");
-        }
         // 生成验证码
         String verificationCode = generateRandomCode(CODE_LENGTH);
 
