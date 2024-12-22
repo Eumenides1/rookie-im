@@ -1,4 +1,4 @@
-package com.rookie.stack.im.controller.user;
+package com.rookie.stack.im.controller;
 
 import com.rookie.stack.im.common.annotations.SkipAppIdValidation;
 import com.rookie.stack.push.MessagePushService;

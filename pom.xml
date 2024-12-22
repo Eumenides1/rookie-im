@@ -19,7 +19,6 @@
     <modules>
         <module>rookie-im-tools</module>
         <module>rookie-im-service</module>
-        <module>rookie-im-tools/rookie-message-push-starter</module>
     </modules>
 
     <properties>

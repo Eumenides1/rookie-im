@@ -77,3 +77,18 @@ CREATE TABLE platform_user_risk_status (
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最近更新时间',
   FOREIGN KEY (user_id) REFERENCES platform_user(user_id) ON DELETE CASCADE
 );
+
+CREATE TABLE platform_operation_log (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '主键',
+    user_id BIGINT NOT NULL COMMENT '用户ID',
+    operation_type VARCHAR(50) NOT NULL COMMENT '操作类型（如发送验证码、验证验证码等）',
+    operation_desc VARCHAR(255) NOT NULL COMMENT '操作描述',
+    ip_address VARCHAR(50) DEFAULT NULL COMMENT '操作来源IP地址',
+    status TINYINT(1) NOT NULL DEFAULT 0 COMMENT '操作结果（0:失败, 1:成功）',
+    error_message VARCHAR(255) DEFAULT NULL COMMENT '错误信息（如果有）',
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '操作时间',
+    extra_data JSON DEFAULT NULL COMMENT '扩展字段，记录更多上下文信息',
+    INDEX idx_user_id (user_id), -- 用户ID索引
+    INDEX idx_operation_type (operation_type), -- 操作类型索引
+    INDEX idx_created_at (created_at) -- 操作时间索引
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='平台操作日志表';
