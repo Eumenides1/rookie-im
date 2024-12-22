@@ -19,19 +19,21 @@
     <modules>
         <module>rookie-im-tools</module>
         <module>rookie-im-service</module>
-        <module>rookie-im-tools/rookie-common</module>
+        <module>rookie-im-tools/rookie-message-push-starter</module>
     </modules>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <lombok.version>1.18.10</lombok.version>
+        <lombok.version>1.18.36</lombok.version>
         <mybatis.version>3.5.9</mybatis.version>
         <mysql-connector.version>8.0.29</mysql-connector.version>
         <velocity.version>2.0</velocity.version>
         <hutool.version>5.8.16</hutool.version>
         <spring.doc.version>2.2.0</spring.doc.version>
+        <mail.version>1.6.2</mail.version>
+        <freemaker.version>2.3.31</freemaker.version>
     </properties>
 
     <dependencyManagement>
@@ -72,6 +74,16 @@
                 <groupId>org.springdoc</groupId>
                 <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
                 <version>${spring.doc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.mail</groupId>
+                <artifactId>javax.mail</artifactId>
+                <version>${mail.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.freemarker</groupId>
+                <artifactId>freemarker</artifactId>
+                <version>${freemaker.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

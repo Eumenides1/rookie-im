@@ -30,3 +30,16 @@ mybatis-plus:
 logging:
   level:
     org.springframework.web: INFO
+
+###############   消息推送相关配置 ###############
+message:
+  push:
+    email:
+      enabled: true
+      host: smtp.163.com
+      port: 25
+      username: 18829526908@163.com
+      password: NNgUrTqHXYUc3xVn
+      from: 18829526908@163.com
+      ssl: true
+    template-path: /mail-template
