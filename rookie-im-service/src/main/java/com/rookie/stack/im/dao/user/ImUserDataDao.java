@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.rookie.stack.im.domain.entity.user.ImUserData;
-import com.rookie.stack.im.domain.enums.ImUserStatusEnum;
+import com.rookie.stack.im.domain.enums.user.ImUserStatusEnum;
 import com.rookie.stack.im.domain.vo.req.user.GetUserListPageReq;
 import com.rookie.stack.im.domain.vo.req.user.UpdateUserInfoReq;
 import com.rookie.stack.im.mapper.user.ImUserDataMapper;

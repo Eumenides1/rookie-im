@@ -1,5 +1,7 @@
 package com.rookie.stack.im.service.platform;
 
+import com.rookie.stack.im.domain.vo.req.platform.PlatformUserRegisterReq;
+
 public interface PlatformUserService {
 
     /**
@@ -15,5 +17,8 @@ public interface PlatformUserService {
      * @return
      */
     boolean verifyCode(String email, String code);
+
+
+    void platformUserRegister(PlatformUserRegisterReq registerReq);
 
 }

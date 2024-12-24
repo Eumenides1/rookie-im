@@ -2,7 +2,7 @@ package com.rookie.stack.im.service.user.adapter;
 
 import com.rookie.stack.im.common.utils.UserIdGenerator;
 import com.rookie.stack.im.domain.entity.user.ImUserData;
-import com.rookie.stack.im.domain.enums.ImUserStatusEnum;
+import com.rookie.stack.im.domain.enums.user.ImUserStatusEnum;
 import com.rookie.stack.im.domain.vo.req.user.ImportUserData;
 import com.rookie.stack.im.domain.vo.resp.user.GetUserInfoResp;
 import org.springframework.beans.BeanUtils;

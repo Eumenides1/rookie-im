@@ -8,7 +8,7 @@ import com.rookie.stack.im.common.exception.user.ImUserErrorEnum;
 import com.rookie.stack.im.common.utils.AssertUtil;
 import com.rookie.stack.im.dao.user.ImUserDataDao;
 import com.rookie.stack.im.domain.entity.user.ImUserData;
-import com.rookie.stack.im.domain.enums.ImUserStatusEnum;
+import com.rookie.stack.im.domain.enums.user.ImUserStatusEnum;
 import com.rookie.stack.im.domain.vo.req.user.GetUserListPageReq;
 import com.rookie.stack.im.domain.vo.req.user.ImportUserData;
 import com.rookie.stack.im.domain.vo.req.user.ImportUserReq;
