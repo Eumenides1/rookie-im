@@ -23,6 +23,12 @@ public class AppIdInterceptor implements HandlerInterceptor {
         if (handler instanceof HandlerMethod) {
             HandlerMethod handlerMethod = (HandlerMethod) handler;
             Method method = handlerMethod.getMethod();
+            Class<?> beanType = handlerMethod.getBeanType();
+
+            // 如果类上标注了 @SkipAppIdValidation 注解，跳过 AppId 校验
+            if (beanType.isAnnotationPresent(SkipAppIdValidation.class)) {
+                return true; // 跳过 AppId 校验
+            }
             // 如果方法上标注了 @SkipAppIdValidation 注解，跳过 AppId 校验
             if (method.isAnnotationPresent(SkipAppIdValidation.class)) {
                 return true; // 跳过 AppId 校验

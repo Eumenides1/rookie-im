@@ -2,6 +2,7 @@ package com.rookie.stack.im.controller.platform;
 
 import com.rookie.stack.im.common.annotations.RateLimiter;
 import com.rookie.stack.im.common.annotations.RateLimiters;
+import com.rookie.stack.im.common.annotations.SkipAppIdValidation;
 import com.rookie.stack.im.domain.vo.req.platform.GetVerificationCodeReq;
 import com.rookie.stack.im.domain.vo.resp.base.ApiResult;
 import com.rookie.stack.im.service.platform.PlatformUserService;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/platform_email")
 @Tag(name = "【PLATFORM_EMAIL】平台邮箱验证相关功能", description = "平台邮箱验证相关功能")
+@SkipAppIdValidation
 public class EmailVerificationController {
 
     @Resource
