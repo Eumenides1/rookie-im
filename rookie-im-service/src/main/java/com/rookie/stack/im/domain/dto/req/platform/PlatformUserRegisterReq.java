@@ -1,4 +1,4 @@
-package com.rookie.stack.im.domain.vo.req.platform;
+package com.rookie.stack.im.domain.dto.req.platform;
 
 import com.rookie.stack.im.common.annotations.StrongPassword;
 import jakarta.validation.constraints.Email;

@@ -3,7 +3,7 @@ package com.rookie.stack.im.common.exception.handler;
 import com.rookie.stack.im.common.exception.AppIdMissingException;
 import com.rookie.stack.im.common.exception.BusinessException;
 import com.rookie.stack.im.common.exception.CommonErrorEnum;
-import com.rookie.stack.im.domain.vo.resp.base.ApiResult;
+import com.rookie.stack.im.domain.dto.resp.base.ApiResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;

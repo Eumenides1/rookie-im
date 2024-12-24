@@ -1,28 +1,18 @@
-package com.rookie.stack.im.domain.vo.req.user;
+package com.rookie.stack.im.domain.dto.req.user;
 
-import com.rookie.stack.im.domain.vo.base.BaseUserInfo;
+import com.rookie.stack.im.domain.dto.req.base.PageBaseReq;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
- * Name：ImportUserData
+ * Name：GetUserListPageReq
  * Author：eumenides
  * Created on: 2024/12/21
  * Description:
  */
-@EqualsAndHashCode(callSuper = true)
 @Data
-@Schema(description = "操作用户资料实体")
-public class ImportUserData extends BaseUserInfo {
-    @Schema(description = "应用ID")
-    private Integer appId;
-
-    @Schema(description = "用户唯一标识")
-    private Long userId;
-
-    private String password;
-
+@Schema(description = "获取用户资料列表请求体（支持分页）")
+public class GetUserListPageReq extends PageBaseReq {
     @Schema(description = "好友验证方式，0：允许所有人，1：需要验证，2：拒绝所有人")
     private Integer friendAllowType;
 

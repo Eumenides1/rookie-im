@@ -6,7 +6,7 @@ import com.rookie.stack.im.common.exception.BusinessException;
 import com.rookie.stack.im.common.exception.CommonErrorEnum;
 import com.rookie.stack.im.common.utils.IpUtil;
 import com.rookie.stack.im.common.utils.RedisUtil;
-import com.rookie.stack.im.domain.vo.req.platform.GetVerificationCodeReq;
+import com.rookie.stack.im.domain.dto.req.platform.GetVerificationCodeReq;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import org.aspectj.lang.ProceedingJoinPoint;

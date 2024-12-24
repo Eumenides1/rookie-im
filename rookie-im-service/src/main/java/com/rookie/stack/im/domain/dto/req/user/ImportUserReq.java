@@ -1,4 +1,4 @@
-package com.rookie.stack.im.domain.vo.req.user;
+package com.rookie.stack.im.domain.dto.req.user;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;

@@ -1,4 +1,4 @@
-package com.rookie.stack.im.domain.vo.req.platform;
+package com.rookie.stack.im.domain.dto.req.platform;
 
 import lombok.Data;
 import jakarta.validation.constraints.Email;

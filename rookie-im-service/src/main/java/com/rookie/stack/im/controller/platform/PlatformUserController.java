@@ -1,8 +1,10 @@
 package com.rookie.stack.im.controller.platform;
 
 import com.rookie.stack.im.common.annotations.SkipAppIdValidation;
-import com.rookie.stack.im.domain.vo.req.platform.PlatformUserRegisterReq;
-import com.rookie.stack.im.domain.vo.resp.base.ApiResult;
+import com.rookie.stack.im.domain.dto.req.platform.PlatformUserLoginReq;
+import com.rookie.stack.im.domain.dto.req.platform.PlatformUserRegisterReq;
+import com.rookie.stack.im.domain.dto.resp.base.ApiResult;
+import com.rookie.stack.im.domain.dto.resp.platform.PlatformUserLoginResp;
 import com.rookie.stack.im.service.platform.PlatformUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -33,6 +35,11 @@ public class PlatformUserController {
     public ApiResult<Void> register(@RequestBody @Valid PlatformUserRegisterReq registerReq) {
         platformUserService.platformUserRegister(registerReq);
         return ApiResult.success();
+    }
+    @PostMapping("/login")
+    @Operation(summary = "平台用户登录接口")
+    public ApiResult<PlatformUserLoginResp> login(@RequestBody @Valid PlatformUserLoginReq loginReq) {
+        return ApiResult.success(platformUserService.login(loginReq));
     }
 
 }

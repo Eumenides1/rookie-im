@@ -1,11 +1,11 @@
 package com.rookie.stack.im.service.user;
 
-import com.rookie.stack.im.domain.vo.req.user.GetUserListPageReq;
-import com.rookie.stack.im.domain.vo.req.user.ImportUserReq;
-import com.rookie.stack.im.domain.vo.req.user.UpdateUserInfoReq;
-import com.rookie.stack.im.domain.vo.resp.base.PageBaseResp;
-import com.rookie.stack.im.domain.vo.resp.user.GetUserInfoResp;
-import com.rookie.stack.im.domain.vo.resp.user.ImportUserResp;
+import com.rookie.stack.im.domain.dto.req.user.GetUserListPageReq;
+import com.rookie.stack.im.domain.dto.req.user.ImportUserReq;
+import com.rookie.stack.im.domain.dto.req.user.UpdateUserInfoReq;
+import com.rookie.stack.im.domain.dto.resp.base.PageBaseResp;
+import com.rookie.stack.im.domain.dto.resp.user.GetUserInfoResp;
+import com.rookie.stack.im.domain.dto.resp.user.ImportUserResp;
 
 /**
  * Name：ImUserService

@@ -1,4 +1,4 @@
-package com.rookie.stack.im.domain.vo.resp.base;
+package com.rookie.stack.im.domain.dto.resp.base;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import io.swagger.v3.oas.annotations.media.Schema;

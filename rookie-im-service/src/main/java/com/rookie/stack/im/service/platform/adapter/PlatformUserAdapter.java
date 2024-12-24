@@ -3,7 +3,7 @@ package com.rookie.stack.im.service.platform.adapter;
 import com.rookie.stack.im.domain.entity.platform.PlatformUser;
 import com.rookie.stack.im.domain.enums.platform.PlatformUserStatusEnum;
 import com.rookie.stack.im.domain.enums.platform.PlatformUserTypeEnum;
-import com.rookie.stack.im.domain.vo.req.platform.PlatformUserRegisterReq;
+import com.rookie.stack.im.domain.dto.req.platform.PlatformUserRegisterReq;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 /**
@@ -23,9 +23,5 @@ public class PlatformUserAdapter {
         platformUser.setAccountType(PlatformUserTypeEnum.MAIN_ACCOUNT.getStatus().byteValue());
         platformUser.setStatus(PlatformUserStatusEnum.UNFROZEN.getStatus().byteValue());
         return platformUser;
-    }
-
-    private String encryptPassword(String password) {
-        return new BCryptPasswordEncoder().encode(password); // 使用 BCrypt 加密
     }
 }

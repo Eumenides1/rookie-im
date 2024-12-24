@@ -1,4 +1,4 @@
-package com.rookie.stack.im.domain.vo.base;
+package com.rookie.stack.im.domain.dto.base;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
