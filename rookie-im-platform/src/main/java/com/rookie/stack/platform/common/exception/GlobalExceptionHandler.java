@@ -1,9 +1,8 @@
-package com.rookie.stack.im.common.exception.handler;
+package com.rookie.stack.platform.common.exception;
 
 import com.rookie.stack.common.domain.dto.resp.ApiResult;
 import com.rookie.stack.common.exception.BusinessException;
 import com.rookie.stack.common.exception.CommonErrorEnum;
-import com.rookie.stack.im.common.exception.AppIdMissingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -62,18 +61,6 @@ public class GlobalExceptionHandler {
     public ApiResult systemExceptionHandler(Exception e) {
         log.error("system exception！The reason is：{}", e.getMessage(), e);
         return ApiResult.fail(CommonErrorEnum.SYSTEM_ERROR);
-    }
-
-    /**
-     * 未携带 AppID 异常
-     * @param ex
-     * @return
-     */
-    @ExceptionHandler(AppIdMissingException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiResult handleAppIdMissingException(AppIdMissingException ex) {
-        log.error("method miss AppId {}", ex.getMessage());
-        return ApiResult.fail(CommonErrorEnum.MISS_APPID);
     }
 
 

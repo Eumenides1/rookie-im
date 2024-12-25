@@ -1,4 +1,4 @@
-package com.rookie.stack.im.service;
+package service;
 
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
