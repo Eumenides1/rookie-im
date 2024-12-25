@@ -1,0 +1,16 @@
+#!/bin/bash
+COMMIT_MSG_FILE=$1
+COMMIT_REGEX="^(feat|fix|docs|style|refactor|test|chore|revert)(\(.+\))?: .{1,72}"
+
+if ! grep -qE "$COMMIT_REGEX" "$COMMIT_MSG_FILE"; then
+    echo "提交信息不符合规范！"
+    echo "请使用以下格式："
+    echo "  feat: 增加新的功能"
+    echo "  fix: 修复一个 bug"
+    echo "  docs: 修改文档"
+    echo "  style: 修改代码格式（不影响代码逻辑）"
+    echo "  refactor: 代码重构（即不是新增功能，也不是修改 bug）"
+    echo "  test: 增加测试"
+    echo "  chore: 修改配置文件等杂项"
+    exit 1
+fi
