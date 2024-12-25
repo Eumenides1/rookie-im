@@ -41,10 +41,6 @@ mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     map-underscore-to-camel-case: true
-#################  JWT相关配置 ###################
-jwt:
-  secret: ${rookie-im.jwt.secret}
-
 #################  日志相关配置 ###################
 logging:
   level:

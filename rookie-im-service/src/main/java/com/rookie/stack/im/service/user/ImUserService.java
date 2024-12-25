@@ -1,9 +1,9 @@
 package com.rookie.stack.im.service.user;
 
+import com.rookie.stack.common.domain.dto.resp.PageBaseResp;
 import com.rookie.stack.im.domain.dto.req.user.GetUserListPageReq;
 import com.rookie.stack.im.domain.dto.req.user.ImportUserReq;
 import com.rookie.stack.im.domain.dto.req.user.UpdateUserInfoReq;
-import com.rookie.stack.im.domain.dto.resp.base.PageBaseResp;
 import com.rookie.stack.im.domain.dto.resp.user.GetUserInfoResp;
 import com.rookie.stack.im.domain.dto.resp.user.ImportUserResp;
 

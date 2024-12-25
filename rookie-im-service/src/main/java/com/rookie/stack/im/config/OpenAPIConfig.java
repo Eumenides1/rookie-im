@@ -18,11 +18,11 @@ public class OpenAPIConfig {
     public OpenAPI openAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("菜鸟 IM 即时通讯平台 API 文档")
-                        .description("菜鸟 IM 即时通讯平台 API 文档")
+                        .title("菜鸟 IM 即时通讯产品 API 文档")
+                        .description("菜鸟 IM 即时通讯产品 API 文档")
                         .version("v1"))
                 .externalDocs(new ExternalDocumentation()
-                        .description("项目API文档")
+                        .description("菜鸟IM 产品API文档")
                         .url("/"));
     }
 }

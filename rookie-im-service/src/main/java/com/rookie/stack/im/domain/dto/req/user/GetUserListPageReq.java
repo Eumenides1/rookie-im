@@ -1,6 +1,7 @@
 package com.rookie.stack.im.domain.dto.req.user;
 
-import com.rookie.stack.im.domain.dto.req.base.PageBaseReq;
+
+import com.rookie.stack.common.domain.dto.req.PageBaseReq;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 

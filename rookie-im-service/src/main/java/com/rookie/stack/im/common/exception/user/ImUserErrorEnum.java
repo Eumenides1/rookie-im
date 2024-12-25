@@ -1,6 +1,6 @@
 package com.rookie.stack.im.common.exception.user;
 
-import com.rookie.stack.im.common.exception.ErrorEnum;
+import com.rookie.stack.common.exception.ErrorEnum;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

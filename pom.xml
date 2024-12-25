@@ -19,6 +19,8 @@
     <modules>
         <module>rookie-im-tools</module>
         <module>rookie-im-service</module>
+        <module>rookie-im-common</module>
+        <module>rookie-im-platform</module>
     </modules>
 
     <properties>

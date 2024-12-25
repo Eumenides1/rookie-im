@@ -1,12 +1,12 @@
 package com.rookie.stack.im.controller.user;
 
-import com.rookie.stack.im.common.exception.BusinessException;
+import com.rookie.stack.common.domain.dto.resp.ApiResult;
+import com.rookie.stack.common.domain.dto.resp.PageBaseResp;
+import com.rookie.stack.common.exception.BusinessException;
 import com.rookie.stack.im.common.exception.user.ImUserErrorEnum;
 import com.rookie.stack.im.domain.dto.req.user.GetUserListPageReq;
 import com.rookie.stack.im.domain.dto.req.user.ImportUserReq;
 import com.rookie.stack.im.domain.dto.req.user.UpdateUserInfoReq;
-import com.rookie.stack.im.domain.dto.resp.base.ApiResult;
-import com.rookie.stack.im.domain.dto.resp.base.PageBaseResp;
 import com.rookie.stack.im.domain.dto.resp.user.GetUserInfoResp;
 import com.rookie.stack.im.domain.dto.resp.user.ImportUserResp;
 import com.rookie.stack.im.service.user.ImUserService;
