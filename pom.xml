@@ -32,7 +32,7 @@
         <mysql-connector.version>8.0.29</mysql-connector.version>
         <velocity.version>2.0</velocity.version>
         <hutool.version>5.8.16</hutool.version>
-        <spring.doc.version>2.2.0</spring.doc.version>
+        <knife4j.version>4.4.0</knife4j.version>
         <mail.version>1.6.2</mail.version>
         <freemaker.version>2.3.31</freemaker.version>
         <jwt.version>0.11.5</jwt.version>
@@ -73,9 +73,9 @@
                 <version>${lombok.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.springdoc</groupId>
-                <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-                <version>${spring.doc.version}</version>
+                <groupId>com.github.xiaoymin</groupId>
+                <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
+                <version>${knife4j.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.sun.mail</groupId>

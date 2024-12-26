@@ -19,6 +19,9 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addInterceptor(new AppIdInterceptor())
                 .addPathPatterns("/**")  // 拦截所有路径
                 .excludePathPatterns("/v3/**")
-                .excludePathPatterns("/swagger-ui/**");  // 排除不需要 AppId 校验的路径
+                .excludePathPatterns("/swagger-ui/**")
+                .excludePathPatterns("/doc.html")
+                .excludePathPatterns("/webjars/**")
+                .excludePathPatterns("/favicon.ico");  // 排除不需要 AppId 校验的路径
     }
 }
