@@ -1,10 +1,12 @@
 package com.rookie.stack.platform.config;
 
+import org.springframework.cache.annotation.CachingConfigurerSupport;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 /**
  * Name：RedisConfig
@@ -13,7 +15,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
  * Description:
  */
 @Configuration
-public class RedisConfig {
+public class RedisConfig extends CachingConfigurerSupport {
 
     /**
      * 配置 StringRedisTemplate，用于处理 String 类型的键值对
@@ -28,8 +30,12 @@ public class RedisConfig {
      */
     @Bean
     public RedisTemplate<Object, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
-        RedisTemplate<Object, Object> template = new RedisTemplate<>();
-        template.setConnectionFactory(redisConnectionFactory);
-        return template;
+        RedisTemplate<Object, Object> redisTemplate = new RedisTemplate<>();
+        redisTemplate.setKeySerializer(new StringRedisSerializer());
+        redisTemplate.setHashKeySerializer(new StringRedisSerializer());
+        redisTemplate.setValueSerializer(new StringRedisSerializer());
+        redisTemplate.setHashValueSerializer(new StringRedisSerializer());
+        redisTemplate.setConnectionFactory(redisConnectionFactory);
+        return redisTemplate;
     }
 }

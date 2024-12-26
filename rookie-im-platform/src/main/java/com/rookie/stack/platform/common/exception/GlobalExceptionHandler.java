@@ -1,5 +1,6 @@
 package com.rookie.stack.platform.common.exception;
 
+import cn.dev33.satoken.exception.NotLoginException;
 import com.rookie.stack.common.domain.dto.resp.ApiResult;
 import com.rookie.stack.common.exception.BusinessException;
 import com.rookie.stack.common.exception.CommonErrorEnum;
@@ -61,6 +62,18 @@ public class GlobalExceptionHandler {
     public ApiResult systemExceptionHandler(Exception e) {
         log.error("system exception！The reason is：{}", e.getMessage(), e);
         return ApiResult.fail(CommonErrorEnum.SYSTEM_ERROR);
+    }
+
+    /**
+     * 未登录异常
+     * @param e
+     * @return
+     */
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(value = NotLoginException.class)
+    public ApiResult notLoginExceptionHandler(Exception e) {
+        log.error("user is not login：{}", e.getMessage(), e);
+        return ApiResult.fail(PlatUserErrorEnum.TOKEN_NOT_EXIST);
     }
 
 

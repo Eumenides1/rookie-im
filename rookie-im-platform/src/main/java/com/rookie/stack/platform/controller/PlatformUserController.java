@@ -1,10 +1,10 @@
 package com.rookie.stack.platform.controller;
 
+import cn.dev33.satoken.stp.SaTokenInfo;
 import com.rookie.stack.common.domain.dto.resp.ApiResult;
 
 import com.rookie.stack.platform.domain.dto.req.PlatformUserLoginReq;
 import com.rookie.stack.platform.domain.dto.req.PlatformUserRegisterReq;
-import com.rookie.stack.platform.domain.dto.resp.PlatformUserLoginResp;
 import com.rookie.stack.platform.service.PlatformUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -37,8 +37,8 @@ public class PlatformUserController {
     }
     @PostMapping("/login")
     @Operation(summary = "平台用户登录接口")
-    public ApiResult<PlatformUserLoginResp> login(@RequestBody @Valid PlatformUserLoginReq loginReq) {
-        return ApiResult.success(platformUserService.login(loginReq));
+    public ApiResult<SaTokenInfo> login(@RequestBody @Valid PlatformUserLoginReq loginReq) {
+        SaTokenInfo login = platformUserService.login(loginReq);
+        return ApiResult.success(login);
     }
-
 }

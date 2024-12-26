@@ -28,6 +28,7 @@ spring:
       host: ${rookie-im.redis.host}                  # Redis 主机
       port: ${rookie-im.redis.port}                       # Redis 端口
       password: ${rookie-im.redis.password}           # 如果设置了密码，则填写
+      database: ${rookie-im.redis.database}
       timeout: 3000ms                  # 连接超时时间
       lettuce:
         pool:
@@ -35,16 +36,11 @@ spring:
           max-idle: 10                 # 最大空闲连接数
           min-idle: 5                  # 最小空闲连接数
           max-wait: 1000ms             # 获取连接的最大等待时间
-      database: ${rookie-im.redis.database}
-
 mybatis-plus:
   mapper-locations: classpath:mappers/**/*.xml
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     map-underscore-to-camel-case: true
-#################  JWT相关配置 ###################
-jwt:
-  secret: ${rookie-im.jwt.secret}
 
 #################  日志相关配置 ###################
 logging:
@@ -63,3 +59,37 @@ message:
       from: ${rookie-im.mail.from}
       ssl: true
     template-path: /mail-template
+
+############## Sa-Token 配置 (文档: https://sa-token.cc) ##############
+# sa-token 配置
+sa-token:
+  # token 名称（同时也是 cookie 名称）
+  token-name: rookie_token
+  # token 有效期（单位：秒） 默认30天，-1 代表永久有效
+  timeout: 86400
+  # token 最低活跃频率（单位：秒），如果 token 超过此时间没有访问系统就会被冻结，默认-1 代表不限制，永不冻结
+  active-timeout: -1
+  # 是否允许同一账号多地同时登录 （为 true 时允许一起登录, 为 false 时新登录挤掉旧登录）
+  is-concurrent: false
+  # 在多人登录同一账号时，是否共用一个 token （为 true 时所有登录共用一个 token, 为 false 时每次登录新建一个 token）
+  is-share: false
+  # token 风格（默认可取值：uuid、simple-uuid、random-32、random-64、random-128、tik）
+  token-style: uuid
+  # 是否输出操作日志
+  is-log: true
+  # 是否尝试从 cookie 里读取 Token，此值为 false 后，StpUtil.login(id) 登录时也不会再往前端注入Cookie
+  #  注意：当使用 redis 作为缓存数据时要将 此关闭，否则不会将redis作为缓存，而是继续使用cookie
+  is-read-cookie: false
+  alone-redis:
+    database: ${rookie-im.redis.session_db}
+    host: ${rookie-im.redis.host}
+    port: ${rookie-im.redis.port}
+    password: ${rookie-im.redis.password}
+    timeout: 10s
+    lettuce:
+      pool:
+        max-active: 200
+        max-wait: -1ms
+        max-idle: 10
+        min-idle: 0
+

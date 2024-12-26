@@ -1,9 +1,9 @@
 package com.rookie.stack.platform.service;
 
 
+import cn.dev33.satoken.stp.SaTokenInfo;
 import com.rookie.stack.platform.domain.dto.req.PlatformUserLoginReq;
 import com.rookie.stack.platform.domain.dto.req.PlatformUserRegisterReq;
-import com.rookie.stack.platform.domain.dto.resp.PlatformUserLoginResp;
 
 public interface PlatformUserService {
 
@@ -21,6 +21,6 @@ public interface PlatformUserService {
     void platformUserRegister(PlatformUserRegisterReq registerReq);
 
 
-    PlatformUserLoginResp login(PlatformUserLoginReq loginReq);
+    SaTokenInfo login(PlatformUserLoginReq loginReq);
 
 }
