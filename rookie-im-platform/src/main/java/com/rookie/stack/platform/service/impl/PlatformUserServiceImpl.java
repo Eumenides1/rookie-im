@@ -6,18 +6,25 @@ import com.rookie.stack.common.exception.BusinessException;
 import com.rookie.stack.common.utils.AssertUtil;
 import com.rookie.stack.platform.common.exception.EmailServerErrorEnum;
 import com.rookie.stack.platform.common.exception.PlatUserErrorEnum;
+import com.rookie.stack.platform.common.utils.DesensitizationUtil;
 import com.rookie.stack.platform.common.utils.RedisUtil;
+import com.rookie.stack.platform.dao.PlatformUserAccessKeyDao;
 import com.rookie.stack.platform.dao.PlatformUserDao;
+import com.rookie.stack.platform.domain.dto.bo.AccessKey;
 import com.rookie.stack.platform.domain.dto.req.PlatformUserLoginReq;
 import com.rookie.stack.platform.domain.dto.req.PlatformUserRegisterReq;
 import com.rookie.stack.platform.domain.entity.PlatformUser;
+import com.rookie.stack.platform.domain.entity.PlatformUserAccessKey;
 import com.rookie.stack.platform.service.PlatformUserService;
+import com.rookie.stack.platform.service.adapter.PlatformAccessKeyAdapter;
 import com.rookie.stack.platform.service.adapter.PlatformUserAdapter;
 import com.rookie.stack.push.MessagePushService;
 import jakarta.annotation.Resource;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.security.SecureRandom;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
@@ -31,19 +38,28 @@ import java.util.Random;
 @Service
 public class PlatformUserServiceImpl implements PlatformUserService {
 
+    private static final String VERIFY_KEY_PREFIX = "email:verify:";
+    private static final int CODE_LENGTH = 6;
+    private static final int CODE_EXPIRATION_SECONDS = 600; // 10分钟
+
+    private static final String CHAR_POOL = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    private static final int DEFAULT_ACCESS_KEY_LENGTH = 32;
+    private static final int DEFAULT_SECRET_KEY_LENGTH = 64;
+
     @Resource
     private MessagePushService emailPushService;
 
     @Resource
     private RedisUtil redisUtil;
 
-
     @Resource
     private PlatformUserDao platformUserDao;
 
-    private static final String VERIFY_KEY_PREFIX = "email:verify:";
-    private static final int CODE_LENGTH = 6;
-    private static final int CODE_EXPIRATION_SECONDS = 600; // 10分钟
+    @Resource
+    private PlatformUserAccessKeyDao platformUserAccessKeyDao;
+
+    @Resource
+    private SecureRandom secureRandom;
 
 
     @Override
@@ -82,6 +98,7 @@ public class PlatformUserServiceImpl implements PlatformUserService {
     }
 
     @Override
+    @Transactional
     public void platformUserRegister(PlatformUserRegisterReq registerReq) {
         // 验证验证码是否合法
         boolean verified = this.verifyCode(registerReq.getEmail(), registerReq.getVerificationCode());
@@ -97,6 +114,8 @@ public class PlatformUserServiceImpl implements PlatformUserService {
         }
         PlatformUser platformUser = PlatformUserAdapter.buildRegisterUser(registerReq);
         platformUserDao.save(platformUser);
+
+        // WARN 注册阶段不生成 AK SK
     }
 
     @Override
@@ -111,6 +130,36 @@ public class PlatformUserServiceImpl implements PlatformUserService {
         }
         StpUtil.login(byEmail.getUserId());
         return StpUtil.getTokenInfo();
+    }
+
+    @Override
+    public AccessKey getAccessKey() {
+        long userId = StpUtil.getLoginIdAsLong();
+        PlatformUserAccessKey userAccessKey = platformUserAccessKeyDao.getByUserId(userId);
+        if (userAccessKey == null) {
+            // 首次查询，或禁用现有 ak 后查询，则生成新 ak sk 并明文返回
+            AccessKey accessKey = this.generateAccessKeys();
+            PlatformUserAccessKey platformUserAccessKey = PlatformAccessKeyAdapter.buildPlatformUserAccessKey(userId, accessKey);
+            platformUserAccessKeyDao.save(platformUserAccessKey);
+            return accessKey;
+        }
+        // 如果是首次生成后查询，则返回 ak 和脱敏后的 sk
+        return new AccessKey(userAccessKey.getAccessKey(), DesensitizationUtil.desensitize(userAccessKey.getSecretKey(),3,3));
+    }
+
+    private AccessKey generateAccessKeys() {
+        String accessKey = generateRandomString(DEFAULT_ACCESS_KEY_LENGTH);
+        String secretKey = generateRandomString(DEFAULT_SECRET_KEY_LENGTH);
+        return new AccessKey(accessKey, secretKey);
+    }
+
+    private String generateRandomString(int length) {
+        StringBuilder sb = new StringBuilder(length);
+        for (int i = 0; i < length; i++) {
+            int index = secureRandom.nextInt(CHAR_POOL.length());
+            sb.append(CHAR_POOL.charAt(index));
+        }
+        return sb.toString();
     }
 
     private String generateRandomCode() {

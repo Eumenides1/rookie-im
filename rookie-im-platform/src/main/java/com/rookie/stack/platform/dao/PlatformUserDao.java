@@ -3,7 +3,7 @@ package com.rookie.stack.platform.dao;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 import com.rookie.stack.platform.domain.entity.PlatformUser;
-import com.rookie.stack.platform.domain.enums.PlatformUserStatusEnum;
+import com.rookie.stack.platform.common.constants.enums.PlatformUserStatusEnum;
 import com.rookie.stack.platform.mapper.PlatformUserMapper;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Repository;

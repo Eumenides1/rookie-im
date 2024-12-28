@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -23,12 +24,13 @@ import java.time.LocalDateTime;
 @TableName("platform_user_access_key")
 public class PlatformUserAccessKey implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**
      * 主键ID
      */
-      @TableId(value = "access_key_id", type = IdType.AUTO)
+    @TableId(value = "access_key_id", type = IdType.AUTO)
     private Long accessKeyId;
 
     /**
