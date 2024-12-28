@@ -1,4 +1,4 @@
-package com.rookie.stack.platform.domain.dto.req;
+package com.rookie.stack.platform.domain.req;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

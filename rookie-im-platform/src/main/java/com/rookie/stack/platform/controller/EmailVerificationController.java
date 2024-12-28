@@ -4,7 +4,7 @@ import com.rookie.stack.common.domain.dto.resp.ApiResult;
 
 import com.rookie.stack.platform.common.annotations.RateLimiter;
 import com.rookie.stack.platform.common.annotations.RateLimiters;
-import com.rookie.stack.platform.domain.dto.req.GetVerificationCodeReq;
+import com.rookie.stack.platform.domain.req.GetVerificationCodeReq;
 import com.rookie.stack.platform.service.PlatformUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

@@ -1,9 +1,9 @@
 package com.rookie.stack.platform.service;
 
-import cn.dev33.satoken.stp.SaTokenInfo;
-import com.rookie.stack.platform.domain.dto.bo.AccessKey;
-import com.rookie.stack.platform.domain.dto.req.PlatformUserLoginReq;
-import com.rookie.stack.platform.domain.dto.req.PlatformUserRegisterReq;
+import com.rookie.stack.platform.domain.bo.AccessKey;
+import com.rookie.stack.platform.domain.req.PlatformUserLoginReq;
+import com.rookie.stack.platform.domain.req.PlatformUserRegisterReq;
+import com.rookie.stack.platform.domain.resp.LoginResp;
 
 public interface PlatformUserService {
 
@@ -25,7 +25,7 @@ public interface PlatformUserService {
     /**
      * 平台用户登录接口
      */
-    SaTokenInfo login(PlatformUserLoginReq loginReq);
+    LoginResp login(PlatformUserLoginReq loginReq);
 
     /**
      * 获取用户 ak sk

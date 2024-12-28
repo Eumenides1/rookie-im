@@ -1,4 +1,4 @@
-package com.rookie.stack.platform.domain.dto.bo;
+package com.rookie.stack.platform.domain.bo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;

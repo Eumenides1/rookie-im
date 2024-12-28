@@ -1,7 +1,7 @@
 package com.rookie.stack.platform.service.adapter;
 
 import com.rookie.stack.platform.common.constants.enums.PlatformAccessKeyStatusEnum;
-import com.rookie.stack.platform.domain.dto.bo.AccessKey;
+import com.rookie.stack.platform.domain.bo.AccessKey;
 import com.rookie.stack.platform.domain.entity.PlatformUserAccessKey;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 

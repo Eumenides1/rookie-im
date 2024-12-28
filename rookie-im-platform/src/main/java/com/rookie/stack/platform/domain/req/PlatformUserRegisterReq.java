@@ -1,4 +1,4 @@
-package com.rookie.stack.platform.domain.dto.req;
+package com.rookie.stack.platform.domain.req;
 
 
 import com.rookie.stack.common.annotations.StrongPassword;

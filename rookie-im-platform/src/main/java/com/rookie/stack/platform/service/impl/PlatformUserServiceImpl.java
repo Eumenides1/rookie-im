@@ -1,6 +1,5 @@
 package com.rookie.stack.platform.service.impl;
 
-import cn.dev33.satoken.stp.SaTokenInfo;
 import cn.dev33.satoken.stp.StpUtil;
 import com.rookie.stack.common.exception.BusinessException;
 import com.rookie.stack.common.utils.AssertUtil;
@@ -11,11 +10,13 @@ import com.rookie.stack.platform.common.utils.DesensitizationUtil;
 import com.rookie.stack.platform.common.utils.RedisUtil;
 import com.rookie.stack.platform.dao.PlatformUserAccessKeyDao;
 import com.rookie.stack.platform.dao.PlatformUserDao;
-import com.rookie.stack.platform.domain.dto.bo.AccessKey;
-import com.rookie.stack.platform.domain.dto.req.PlatformUserLoginReq;
-import com.rookie.stack.platform.domain.dto.req.PlatformUserRegisterReq;
+import com.rookie.stack.platform.domain.bo.AccessKey;
 import com.rookie.stack.platform.domain.entity.PlatformUser;
 import com.rookie.stack.platform.domain.entity.PlatformUserAccessKey;
+import com.rookie.stack.platform.domain.req.PlatformUserLoginReq;
+import com.rookie.stack.platform.domain.req.PlatformUserRegisterReq;
+import com.rookie.stack.platform.domain.resp.LoginResp;
+import com.rookie.stack.platform.domain.vo.FrontUserInfo;
 import com.rookie.stack.platform.service.PlatformUserService;
 import com.rookie.stack.platform.service.adapter.PlatformAccessKeyAdapter;
 import com.rookie.stack.platform.service.adapter.PlatformUserAdapter;
@@ -121,17 +122,17 @@ public class PlatformUserServiceImpl implements PlatformUserService {
     }
 
     @Override
-    public SaTokenInfo login(PlatformUserLoginReq loginReq) {
+    public LoginResp login(PlatformUserLoginReq loginReq) {
         // 根据邮箱判断如果用户已经存在了，就直接返回
         PlatformUser byEmail = platformUserDao.getByEmail(loginReq.getEmail());
         AssertUtil.isNotEmpty(byEmail,PlatUserErrorEnum.EMAIL_OR_PASSWORD_ERROR);
-
         // 校验密码
         if (!new BCryptPasswordEncoder().matches(loginReq.getPassword(), byEmail.getPassword())) {
             throw new BusinessException(PlatUserErrorEnum.EMAIL_OR_PASSWORD_ERROR);
         }
         StpUtil.login(byEmail.getUserId());
-        return StpUtil.getTokenInfo();
+        FrontUserInfo frontUserInfo = platformUserDao.getFrontUserInfo(byEmail.getUserId());
+        return new LoginResp(frontUserInfo, StpUtil.getTokenInfo());
     }
 
     @Override
