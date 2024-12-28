@@ -4,15 +4,18 @@ import cn.dev33.satoken.stp.StpUtil;
 import com.rookie.stack.common.exception.BusinessException;
 import com.rookie.stack.common.utils.AssertUtil;
 import com.rookie.stack.platform.common.constants.enums.PlatformAccessKeyStatusEnum;
+import com.rookie.stack.platform.common.constants.enums.PlatformUserTypeEnum;
 import com.rookie.stack.platform.common.exception.EmailServerErrorEnum;
 import com.rookie.stack.platform.common.exception.PlatUserErrorEnum;
 import com.rookie.stack.platform.common.utils.DesensitizationUtil;
 import com.rookie.stack.platform.common.utils.RedisUtil;
 import com.rookie.stack.platform.dao.PlatformUserAccessKeyDao;
 import com.rookie.stack.platform.dao.PlatformUserDao;
+import com.rookie.stack.platform.dao.PlatformUserRoleDao;
 import com.rookie.stack.platform.domain.bo.AccessKey;
 import com.rookie.stack.platform.domain.entity.PlatformUser;
 import com.rookie.stack.platform.domain.entity.PlatformUserAccessKey;
+import com.rookie.stack.platform.domain.entity.PlatformUserRole;
 import com.rookie.stack.platform.domain.req.PlatformUserLoginReq;
 import com.rookie.stack.platform.domain.req.PlatformUserRegisterReq;
 import com.rookie.stack.platform.domain.resp.LoginResp;
@@ -31,6 +34,8 @@ import java.security.SecureRandom;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
+
+import static com.rookie.stack.platform.common.constants.constants.AppConstants.COMMON_APPID;
 
 /**
  * Name：PlatformUserServiceImpl
@@ -60,6 +65,9 @@ public class PlatformUserServiceImpl implements PlatformUserService {
 
     @Resource
     private PlatformUserAccessKeyDao platformUserAccessKeyDao;
+
+    @Resource
+    private PlatformUserRoleDao platformUserRoleDao;
 
     @Resource
     private SecureRandom secureRandom;
@@ -117,8 +125,8 @@ public class PlatformUserServiceImpl implements PlatformUserService {
         }
         PlatformUser platformUser = PlatformUserAdapter.buildRegisterUser(registerReq);
         platformUserDao.save(platformUser);
-
-        // WARN 注册阶段不生成 AK SK
+        // 注册主账号 配置主账号默认权限
+        platformUserRoleDao.save(new PlatformUserRole(platformUser.getUserId(),COMMON_APPID, PlatformUserTypeEnum.MAIN_ACCOUNT.getStatus().longValue()));
     }
 
     @Override

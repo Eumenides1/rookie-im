@@ -42,17 +42,6 @@ CREATE TABLE platform_user_access_key (
  UNIQUE KEY (access_key) COMMENT '确保 AccessKey 唯一'
 );
 /**
-  用户子账户配额表
- */
-CREATE TABLE platform_account_quota (
-   quota_id         BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '配额ID',
-   user_id          BIGINT NOT NULL COMMENT '用户ID',
-   max_sub_accounts INT      DEFAULT 5 COMMENT '最大子账户数量',
-   created_at       DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-   updated_at       DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最近更新时间',
-   FOREIGN KEY (user_id) REFERENCES platform_user (user_id) ON DELETE CASCADE
-);
-/**
   平台用户登录日志表
  */
 CREATE TABLE platform_user_login_log (

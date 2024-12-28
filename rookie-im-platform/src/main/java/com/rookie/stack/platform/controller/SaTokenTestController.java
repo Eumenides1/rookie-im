@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
  * Description:
  */
 @RestController
-@RequestMapping("/sa-token/")
+@RequestMapping("/plat_admin/")
 public class SaTokenTestController {
     // 测试登录，浏览器访问： http://localhost:8081/user/doLogin?username=zhang&password=123456
     @RequestMapping("doLogin")

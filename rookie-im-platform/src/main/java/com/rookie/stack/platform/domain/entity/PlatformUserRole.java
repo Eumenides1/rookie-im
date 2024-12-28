@@ -16,20 +16,26 @@ import java.time.LocalDateTime;
  * </p>
  *
  * @author Jaguarliu
- * @since 2024-12-22
+ * @since 2024-12-28
  */
 @Getter
 @Setter
-@TableName("platform_account_quota")
-public class PlatformAccountQuota implements Serializable {
+@TableName("platform_user_role")
+public class PlatformUserRole implements Serializable {
+
+    public PlatformUserRole(Long userId, Long appId, Long roleId) {
+        this.userId = userId;
+        this.appId = appId;
+        this.roleId = roleId;
+    }
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * 配额ID
+     * 主键ID
      */
-      @TableId(value = "quota_id", type = IdType.AUTO)
-    private Long quotaId;
+      @TableId(value = "user_role_id", type = IdType.AUTO)
+    private Long userRoleId;
 
     /**
      * 用户ID
@@ -38,10 +44,16 @@ public class PlatformAccountQuota implements Serializable {
     private Long userId;
 
     /**
-     * 最大子账户数量
+     * 应用ID
      */
-    @TableField("max_sub_accounts")
-    private Integer maxSubAccounts;
+    @TableField("app_id")
+    private Long appId;
+
+    /**
+     * 角色ID
+     */
+    @TableField("role_id")
+    private Long roleId;
 
     /**
      * 创建时间

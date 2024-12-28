@@ -11,11 +11,12 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Getter
 public enum PlatformUserTypeEnum {
-
-    MAIN_ACCOUNT(1, "主账号"),
-    SUB_ACCOUNT(2,"子账户");
+    ADMIN(1,"ADMIN","管理员账号"),
+    MAIN_ACCOUNT(2, "MAIN_ACCOUNT","主账号"),
+    SUB_ACCOUNT(3,"SUB_ACCOUNT","子账户");
 
     private final Integer status;
+    private final String name;
     private final String desc;
 
     private static Map<Integer, PlatformUserTypeEnum> cache;

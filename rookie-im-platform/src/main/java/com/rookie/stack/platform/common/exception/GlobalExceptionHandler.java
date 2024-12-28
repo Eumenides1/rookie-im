@@ -1,6 +1,7 @@
 package com.rookie.stack.platform.common.exception;
 
 import cn.dev33.satoken.exception.NotLoginException;
+import cn.dev33.satoken.exception.NotPermissionException;
 import com.rookie.stack.common.domain.dto.resp.ApiResult;
 import com.rookie.stack.common.exception.BusinessException;
 import com.rookie.stack.common.exception.CommonErrorEnum;
@@ -74,6 +75,18 @@ public class GlobalExceptionHandler {
     public ApiResult notLoginExceptionHandler(Exception e) {
         log.error("user is not login：{}", e.getMessage(), e);
         return ApiResult.fail(PlatUserErrorEnum.TOKEN_NOT_EXIST);
+    }
+
+    /**
+     * 未登录异常
+     * @param e
+     * @return
+     */
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ExceptionHandler(value = NotPermissionException.class)
+    public ApiResult notPermissionExceptionHandler(Exception e) {
+        log.error("user no permission：{}", e.getMessage(), e);
+        return ApiResult.fail(PlatUserErrorEnum.USER_NO_PERMISSION);
     }
 
 
