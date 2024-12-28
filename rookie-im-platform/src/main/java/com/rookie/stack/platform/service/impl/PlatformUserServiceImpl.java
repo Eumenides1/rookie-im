@@ -4,6 +4,7 @@ import cn.dev33.satoken.stp.SaTokenInfo;
 import cn.dev33.satoken.stp.StpUtil;
 import com.rookie.stack.common.exception.BusinessException;
 import com.rookie.stack.common.utils.AssertUtil;
+import com.rookie.stack.platform.common.constants.enums.PlatformAccessKeyStatusEnum;
 import com.rookie.stack.platform.common.exception.EmailServerErrorEnum;
 import com.rookie.stack.platform.common.exception.PlatUserErrorEnum;
 import com.rookie.stack.platform.common.utils.DesensitizationUtil;
@@ -22,6 +23,7 @@ import com.rookie.stack.push.MessagePushService;
 import jakarta.annotation.Resource;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
@@ -139,12 +141,29 @@ public class PlatformUserServiceImpl implements PlatformUserService {
         if (userAccessKey == null) {
             // 首次查询，或禁用现有 ak 后查询，则生成新 ak sk 并明文返回
             AccessKey accessKey = this.generateAccessKeys();
-            PlatformUserAccessKey platformUserAccessKey = PlatformAccessKeyAdapter.buildPlatformUserAccessKey(userId, accessKey);
-            platformUserAccessKeyDao.save(platformUserAccessKey);
+            userAccessKey = PlatformAccessKeyAdapter.buildPlatformUserAccessKey(userId, accessKey);
+            platformUserAccessKeyDao.save(userAccessKey);
             return accessKey;
         }
         // 如果是首次生成后查询，则返回 ak 和脱敏后的 sk
         return new AccessKey(userAccessKey.getAccessKey(), DesensitizationUtil.desensitize(userAccessKey.getSecretKey(),3,3));
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED)
+    public AccessKey newAccessKey() {
+        long userId = StpUtil.getLoginIdAsLong();
+        PlatformUserAccessKey userAccessKey = platformUserAccessKeyDao.getByUserId(userId);
+        // 如果有可用 ak，那先将可用 ak 设置为不可用，然后生成新的保存
+        if (userAccessKey != null) {
+            userAccessKey.setStatus(PlatformAccessKeyStatusEnum.FREEZE.getStatus().byteValue());
+            platformUserAccessKeyDao.updateById(userAccessKey);
+        }
+        // 生成新的 ak，返回
+        AccessKey accessKey = this.generateAccessKeys();
+        PlatformUserAccessKey newAccessKey = PlatformAccessKeyAdapter.buildPlatformUserAccessKey(userId, accessKey);
+        platformUserAccessKeyDao.save(newAccessKey);
+        return accessKey;
     }
 
     private AccessKey generateAccessKeys() {

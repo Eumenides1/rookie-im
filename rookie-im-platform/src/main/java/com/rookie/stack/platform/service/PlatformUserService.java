@@ -32,4 +32,9 @@ public interface PlatformUserService {
      */
     AccessKey getAccessKey();
 
+    /**
+     * 生成新的 ak,sk
+     */
+    AccessKey newAccessKey();
+
 }

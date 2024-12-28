@@ -44,4 +44,9 @@ public class PlatformUserController {
     public ApiResult<AccessKey> getAccessKey() {
         return ApiResult.success(platformUserService.getAccessKey());
     }
+    @PostMapping("/newAccessKey")
+    @Operation(summary = "更新账户 ak、sk 接口")
+    public ApiResult<AccessKey> newAccessKey() {
+         return ApiResult.success(platformUserService.newAccessKey());
+    }
 }
