@@ -9,7 +9,7 @@ import com.rookie.stack.im.common.context.AppIdContext;
 import com.rookie.stack.im.common.exception.user.ImUserErrorEnum;
 import com.rookie.stack.im.dao.user.ImUserDataDao;
 import com.rookie.stack.im.domain.entity.user.ImUserData;
-import com.rookie.stack.im.domain.enums.user.ImUserStatusEnum;
+import com.rookie.stack.im.common.constants.enums.user.ImUserStatusEnum;
 import com.rookie.stack.im.domain.dto.req.user.GetUserListPageReq;
 import com.rookie.stack.im.domain.dto.req.user.ImportUserData;
 import com.rookie.stack.im.domain.dto.req.user.ImportUserReq;

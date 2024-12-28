@@ -8,7 +8,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * Created on: 2024/12/18
  * Description:
  */
-public class UserIdGenerator {
+public class IdGenerator {
 
     // 雪花算法的配置常量
     private static final long EPOCH = 1633046400000L;  // 起始时间（2021年10月1日00:00:00）
@@ -21,15 +21,16 @@ public class UserIdGenerator {
 
     private long lastTimestamp = -1L;  // 最后生成的时间戳
     private AtomicLong sequence = new AtomicLong(0);  // 自增序列，保证同一毫秒内生成唯一 ID
+    private AtomicLong appIdCounter = new AtomicLong(1); // 用于生成唯一 AppId
 
     // 使用静态实例实现单例
-    private static final UserIdGenerator INSTANCE = new UserIdGenerator();
+    private static final IdGenerator INSTANCE = new IdGenerator();
 
     // 私有构造函数，防止外部创建实例
-    private UserIdGenerator() {}
+    private IdGenerator() {}
 
     // 获取单例实例
-    public static UserIdGenerator getInstance() {
+    public static IdGenerator getInstance() {
         return INSTANCE;
     }
 
@@ -64,6 +65,31 @@ public class UserIdGenerator {
     }
 
     /**
+     * 生成唯一的 AppId
+     * @return 生成的唯一 AppId
+     */
+    public synchronized long generateAppId() {
+        long timestamp = System.currentTimeMillis() - EPOCH;
+
+        // 如果当前时间戳与上次相同，说明同一毫秒内生成多个 ID
+        if (timestamp == lastTimestamp) {
+            // 如果序列号已经达到最大值，等待下一毫秒
+            if (sequence.get() == MAX_SEQUENCE) {
+                timestamp = waitNextMillis(lastTimestamp);
+            }
+        } else {
+            // 如果是新的一毫秒，重置序列号
+            sequence.set(0);
+        }
+
+        lastTimestamp = timestamp;
+
+        // 生成AppId
+        long appId = (timestamp << TIMESTAMP_SHIFT) | sequence.getAndIncrement();
+        return appId;
+    }
+
+    /**
      * 等待下一毫秒
      * @param lastTimestamp 上一次生成ID的时间戳
      * @return 下一毫秒的时间戳
@@ -81,13 +107,18 @@ public class UserIdGenerator {
         return getInstance().generateUserId(appId);
     }
 
+    // 直接提供静态方法来生成AppId
+    public static long generate() {
+        return getInstance().generateAppId();
+    }
+
     public static void main(String[] args) {
         // 假设 AppId 是 1
         long appId = 1;
 
         // 生成 10 个用户ID
         for (int i = 0; i < 10; i++) {
-            long userId = UserIdGenerator.generate(appId);
+            long userId = IdGenerator.generate(appId);
             System.out.println("Generated UserId: " + userId);
         }
     }
