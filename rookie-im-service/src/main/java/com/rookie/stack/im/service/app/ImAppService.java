@@ -11,6 +11,14 @@ import com.rookie.stack.im.domain.dto.resp.app.NewAppResp;
  */
 public interface ImAppService {
 
+    /**
+     * 新建 APP
+     */
     NewAppResp newApp(NewAppReq req);
+
+    /**
+     * 判断 App 名字是否重复
+     */
+    void appNameExist(String appName);
 
 }

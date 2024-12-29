@@ -9,10 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * Name：ImAPpController
@@ -28,10 +25,18 @@ public class ImAppController {
 
     @Resource
     private ImAppService imAppService;
+
     @PostMapping("/newApp")
     @Operation(summary = "新建 IM 应用接口")
     public ApiResult<NewAppResp> newApp(@RequestBody @Valid NewAppReq newAppReq) {
         NewAppResp newAppResp = imAppService.newApp(newAppReq);
         return ApiResult.success(newAppResp);
+    }
+
+    @GetMapping("/check")
+    @Operation(summary = "检查应用名称是否重复")
+    public ApiResult<Void> checkAppName(@RequestParam String appName) {
+        imAppService.appNameExist(appName);
+        return ApiResult.success();
     }
 }

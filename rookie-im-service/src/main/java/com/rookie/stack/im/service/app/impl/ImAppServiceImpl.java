@@ -1,5 +1,7 @@
 package com.rookie.stack.im.service.app.impl;
 
+import com.rookie.stack.common.utils.AssertUtil;
+import com.rookie.stack.im.common.exception.app.AppErrorEnum;
 import com.rookie.stack.im.dao.app.ImAppDao;
 import com.rookie.stack.im.domain.dto.req.app.NewAppReq;
 import com.rookie.stack.im.domain.dto.resp.app.NewAppResp;
@@ -24,10 +26,17 @@ public class ImAppServiceImpl implements ImAppService {
 
     @Override
     public NewAppResp newApp(NewAppReq req) {
+        this.appNameExist(req.getName());
         ImApp imApp = ImAppAdapter.buildImApp(req);
         imAppDao.save(imApp);
         NewAppResp newAppResp = new NewAppResp();
         BeanUtils.copyProperties(imApp, newAppResp);
         return newAppResp;
+    }
+
+    @Override
+    public void appNameExist(String appName) {
+        ImApp byAppName = imAppDao.getByAppName(appName);
+        AssertUtil.isEmpty(byAppName, AppErrorEnum.APP_NAME_EXIST);
     }
 }
