@@ -6,6 +6,8 @@ import com.rookie.stack.im.domain.entity.app.ImApp;
 import com.rookie.stack.im.mapper.app.ImAppMapper;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * Name：ImAppDao
  * Author：eumenides
@@ -20,6 +22,16 @@ public class ImAppDao extends ServiceImpl<ImAppMapper, ImApp> {
                 .eq(ImApp::getName, appName)
                 .eq(ImApp::getStatus, AppStatusEnum.ENABLED.getStatus())
                 .one();
+    }
+
+    public List<ImApp> findAllApps() {
+        return lambdaQuery()
+                .eq(ImApp::getStatus, AppStatusEnum.ENABLED.getStatus())
+                .orderByAsc(ImApp::getStatus).list();
+    }
+
+    public ImApp getByAppId(Long appId) {
+        return lambdaQuery().eq(ImApp::getId, appId).eq(ImApp::getStatus, AppStatusEnum.ENABLED.getStatus()).one();
     }
 
 }

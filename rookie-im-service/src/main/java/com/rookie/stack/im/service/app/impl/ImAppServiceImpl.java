@@ -9,8 +9,11 @@ import com.rookie.stack.im.domain.entity.app.ImApp;
 import com.rookie.stack.im.service.app.ImAppService;
 import com.rookie.stack.im.service.app.adapter.ImAppAdapter;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * Name：ImAppServiceImpl
@@ -19,10 +22,12 @@ import org.springframework.stereotype.Service;
  * Description:
  */
 @Service
+@Slf4j
 public class ImAppServiceImpl implements ImAppService {
 
     @Resource
     private ImAppDao imAppDao;
+
 
     @Override
     public NewAppResp newApp(NewAppReq req) {
@@ -38,5 +43,14 @@ public class ImAppServiceImpl implements ImAppService {
     public void appNameExist(String appName) {
         ImApp byAppName = imAppDao.getByAppName(appName);
         AssertUtil.isEmpty(byAppName, AppErrorEnum.APP_NAME_EXIST);
+    }
+
+    @Override
+    public List<ImApp> findAllApps() {
+        return imAppDao.findAllApps();
+    }
+
+    public ImApp getAppByAppId(Long appId) {
+        return imAppDao.getByAppId(appId);
     }
 }

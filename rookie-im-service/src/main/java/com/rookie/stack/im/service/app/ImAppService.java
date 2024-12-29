@@ -2,6 +2,9 @@ package com.rookie.stack.im.service.app;
 
 import com.rookie.stack.im.domain.dto.req.app.NewAppReq;
 import com.rookie.stack.im.domain.dto.resp.app.NewAppResp;
+import com.rookie.stack.im.domain.entity.app.ImApp;
+
+import java.util.List;
 
 /**
  * Name：ImAppService
@@ -20,5 +23,10 @@ public interface ImAppService {
      * 判断 App 名字是否重复
      */
     void appNameExist(String appName);
+
+    /**
+     * 获取所有的
+     */
+    List<ImApp> findAllApps();
 
 }
