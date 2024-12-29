@@ -42,11 +42,9 @@ public class ImUserServiceImpl implements ImUserService {
     private final static Integer EXECUTOR_COUNT = 10;
 
     private final ImUserDataDao imUserDataDao;
-    private final HttpServletRequest request;
 
     public ImUserServiceImpl(ImUserDataDao imUserDataDao, HttpServletRequest request) {
         this.imUserDataDao = imUserDataDao;
-        this.request = request;
     }
 
     @Override
@@ -140,6 +138,12 @@ public class ImUserServiceImpl implements ImUserService {
             throw new BusinessException(ImUserErrorEnum.USER_STATUS_ERROR);
         }
         imUserDataDao.deleteUserInfoById(userId);
+    }
+
+    @Override
+    public List<GetUserInfoResp> searchUser(String phone, String email, Long userId, Integer userType) {
+        List<ImUserData> userData = imUserDataDao.searchUsers(phone, email, userId, userType);
+        return ImUserAdapter.buildBaseUserInfo(userData);
     }
 
     // 分批方法，将用户数据拆分成多个小批次

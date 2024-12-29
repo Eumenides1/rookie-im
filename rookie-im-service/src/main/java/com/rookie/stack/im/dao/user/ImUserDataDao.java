@@ -1,17 +1,22 @@
 package com.rookie.stack.im.dao.user;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.rookie.stack.im.common.context.AppIdContext;
-import com.rookie.stack.im.domain.entity.user.ImUserData;
 import com.rookie.stack.im.common.constants.enums.user.ImUserStatusEnum;
+import com.rookie.stack.im.common.context.AppIdContext;
 import com.rookie.stack.im.domain.dto.req.user.GetUserListPageReq;
 import com.rookie.stack.im.domain.dto.req.user.UpdateUserInfoReq;
+import com.rookie.stack.im.domain.entity.user.ImUserData;
 import com.rookie.stack.im.mapper.user.ImUserDataMapper;
+import jakarta.annotation.Resource;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Name：ImUserDataDao
@@ -21,6 +26,9 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public class ImUserDataDao extends ServiceImpl<ImUserDataMapper, ImUserData> {
+
+    @Resource
+    private ImUserDataMapper imUserDataMapper;
 
     public IPage<ImUserData> getUserInfoPage( GetUserListPageReq req) {
         Page page = req.plusPage();
@@ -38,6 +46,7 @@ public class ImUserDataDao extends ServiceImpl<ImUserDataMapper, ImUserData> {
         return lambdaQuery()
                 .eq(ImUserData::getAppId, AppIdContext.getAppId())
                 .eq(ImUserData::getUserId, userId)
+                .eq(ImUserData::getDelFlag, ImUserStatusEnum.NOT_DELETED.getStatus())
                 .one();
     }
 
@@ -53,4 +62,23 @@ public class ImUserDataDao extends ServiceImpl<ImUserDataMapper, ImUserData> {
         imUserData.setDelFlag(ImUserStatusEnum.DELETED.getStatus());
         this.updateById(imUserData);
     }
+
+    public List<ImUserData> searchUsers(String phone, String email, Long userId, Integer userType) {
+        QueryWrapper<ImUserData> queryWrapper = new QueryWrapper<>();
+
+        // 必须的条件
+        queryWrapper.eq("app_id", AppIdContext.getAppId());
+        queryWrapper.eq("del_flag", ImUserStatusEnum.NOT_DELETED.getStatus());
+
+        // 动态条件绑定到 app_id 范围内
+        queryWrapper.and(wrapper -> {
+            Optional.ofNullable(phone).ifPresent(value -> wrapper.or().eq("phone", value));
+            Optional.ofNullable(email).ifPresent(value -> wrapper.or().eq("email", value));
+            Optional.ofNullable(userId).ifPresent(value -> wrapper.or().eq("user_id", value));
+            Optional.ofNullable(userType).ifPresent(value -> wrapper.or().eq("user_type", value));
+        });
+
+        return imUserDataMapper.selectList(queryWrapper);
+    }
+
 }

@@ -7,6 +7,8 @@ import com.rookie.stack.im.domain.dto.req.user.UpdateUserInfoReq;
 import com.rookie.stack.im.domain.dto.resp.user.GetUserInfoResp;
 import com.rookie.stack.im.domain.dto.resp.user.ImportUserResp;
 
+import java.util.List;
+
 /**
  * Name：ImUserService
  * Author：eumenides
@@ -41,4 +43,14 @@ public interface ImUserService {
      * @param userId
      */
     void deleteUserById(Long userId);
+
+    /**
+     * 搜索用户
+     * @param phone 用户手机号
+     * @param email 用户邮箱
+     * @param userId 用户 id
+     * @param userType 用户类型
+     * @return 用户信息
+     */
+    List<GetUserInfoResp> searchUser(String phone, String email, Long userId, Integer userType);
 }
