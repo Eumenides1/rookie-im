@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.rookie.stack.im.common.context.AppIdContext;
 import com.rookie.stack.im.domain.entity.user.ImUserData;
 import com.rookie.stack.im.common.constants.enums.user.ImUserStatusEnum;
 import com.rookie.stack.im.domain.dto.req.user.GetUserListPageReq;
@@ -21,10 +22,10 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class ImUserDataDao extends ServiceImpl<ImUserDataMapper, ImUserData> {
 
-    public IPage<ImUserData> getUserInfoPage(Integer appId, GetUserListPageReq req) {
+    public IPage<ImUserData> getUserInfoPage( GetUserListPageReq req) {
         Page page = req.plusPage();
         LambdaQueryWrapper<ImUserData> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(ImUserData::getAppId, appId) // 必选条件
+        queryWrapper.eq(ImUserData::getAppId, AppIdContext.getAppId()) // 必选条件
                 .eq(ImUserData::getDelFlag, ImUserStatusEnum.NOT_DELETED.getStatus())
                 .eq(req.getFriendAllowType() != null, ImUserData::getFriendAllowType, req.getFriendAllowType())
                 .eq(req.getDisableAddFriend() != null, ImUserData::getDisableAddFriend, req.getDisableAddFriend())
@@ -33,20 +34,20 @@ public class ImUserDataDao extends ServiceImpl<ImUserDataMapper, ImUserData> {
         return this.page(page, queryWrapper);
     }
 
-    public ImUserData getUserInfoById(Integer appId, Long userId) {
+    public ImUserData getUserInfoById(Long userId) {
         return lambdaQuery()
-                .eq(ImUserData::getAppId, appId)
+                .eq(ImUserData::getAppId, AppIdContext.getAppId())
                 .eq(ImUserData::getUserId, userId)
                 .one();
     }
 
-    public void updateUserInfoById(Integer appId, UpdateUserInfoReq req) {
+    public void updateUserInfoById(UpdateUserInfoReq req) {
         ImUserData imUserData = new ImUserData();
         BeanUtils.copyProperties(req, imUserData);
         this.updateById(imUserData);
     }
 
-    public void deleteUserInfoById(Integer appId, Long userId) {
+    public void deleteUserInfoById(Long userId) {
         ImUserData imUserData = new ImUserData();
         imUserData.setUserId(userId);
         imUserData.setDelFlag(ImUserStatusEnum.DELETED.getStatus());

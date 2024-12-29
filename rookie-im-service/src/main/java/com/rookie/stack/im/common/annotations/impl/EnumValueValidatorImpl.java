@@ -1,7 +1,6 @@
 package com.rookie.stack.im.common.annotations.impl;
 
 import com.rookie.stack.common.exception.BusinessException;
-import com.rookie.stack.common.exception.CommonErrorEnum;
 import com.rookie.stack.im.common.annotations.EnumValueValidator;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
@@ -32,6 +31,20 @@ public class EnumValueValidatorImpl implements ConstraintValidator<EnumValueVali
             return true; // 参数为空时不进行校验（可根据需求调整）
         }
 
+        // 检查枚举字段是否存在
+        boolean fieldExists = Arrays.stream(enumClass.getDeclaredFields())
+                .anyMatch(field -> field.getName().equals(enumField));
+
+        if (!fieldExists) {
+            // 设置自定义的校验错误信息
+            context.disableDefaultConstraintViolation();
+            context.buildConstraintViolationWithTemplate(
+                            String.format("The specified enumField '%s' does not exist in enum class '%s'.",
+                                    enumField, enumClass.getName()))
+                    .addConstraintViolation();
+            return false; // 校验失败
+        }
+
         // 遍历枚举中的字段进行匹配
         return Arrays.stream(enumClass.getEnumConstants())
                 .anyMatch(enumConstant -> {
@@ -41,7 +54,10 @@ public class EnumValueValidatorImpl implements ConstraintValidator<EnumValueVali
                         Object enumValue = field.get(enumConstant);
                         return value.equals(enumValue);
                     } catch (Exception e) {
-                        throw new BusinessException(CommonErrorEnum.PARAM_VALID);
+                        // 理论上不会进入此分支，因为 initialize 已校验字段存在性
+                        throw new BusinessException(
+                                String.format("Error accessing field '%s' in enum '%s'.", enumField, enumClass.getName())
+                        );
                     }
                 });
     }

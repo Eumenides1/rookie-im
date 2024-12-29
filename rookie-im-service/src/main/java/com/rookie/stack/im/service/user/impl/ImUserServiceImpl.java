@@ -101,8 +101,7 @@ public class ImUserServiceImpl implements ImUserService {
 
     @Override
     public PageBaseResp<GetUserInfoResp> queryUsers(GetUserListPageReq getUserListPageReq) {
-        Integer appId = AppIdContext.getAppId();
-        IPage<ImUserData> imUserDataIPage = imUserDataDao.getUserInfoPage(appId, getUserListPageReq);
+        IPage<ImUserData> imUserDataIPage = imUserDataDao.getUserInfoPage(getUserListPageReq);
 
         if (CollectionUtil.isEmpty(imUserDataIPage.getRecords())) {
             return PageBaseResp.empty();
@@ -112,8 +111,7 @@ public class ImUserServiceImpl implements ImUserService {
 
     @Override
     public GetUserInfoResp queryUserById(Long userId) {
-        Integer appId = AppIdContext.getAppId();
-        ImUserData userInfoById = imUserDataDao.getUserInfoById(appId, userId);
+        ImUserData userInfoById = imUserDataDao.getUserInfoById(userId);
         AssertUtil.isNotEmpty(userInfoById, "用户信息不存在！");
         return ImUserAdapter.buildBaseUserInfo(userInfoById);
     }
@@ -122,26 +120,26 @@ public class ImUserServiceImpl implements ImUserService {
     public void updateUserInfo(UpdateUserInfoReq req) {
         Integer appId = AppIdContext.getAppId();
         // 判断用户信息有效性
-        ImUserData userInfoById = imUserDataDao.getUserInfoById(appId, req.getUserId());
+        ImUserData userInfoById = imUserDataDao.getUserInfoById(req.getUserId());
         AssertUtil.isNotEmpty(userInfoById, "用户信息不存在！");
         // 用户状态需要为启用状态
         if (!Objects.equals(userInfoById.getForbiddenFlag(), ImUserStatusEnum.ENABLED.getStatus())) {
             throw new BusinessException(ImUserErrorEnum.USER_STATUS_ERROR);
         }
-        imUserDataDao.updateUserInfoById(appId, req);
+        imUserDataDao.updateUserInfoById(req);
     }
 
     @Override
     public void deleteUserById(Long userId) {
         Integer appId = AppIdContext.getAppId();
         // 判断用户信息有效性
-        ImUserData userInfoById = imUserDataDao.getUserInfoById(appId, userId);
+        ImUserData userInfoById = imUserDataDao.getUserInfoById(userId);
         AssertUtil.isNotEmpty(userInfoById, "用户信息不存在！");
         // 用户状态需要为启用状态
         if (!Objects.equals(userInfoById.getDelFlag(), ImUserStatusEnum.NOT_DELETED.getStatus())) {
             throw new BusinessException(ImUserErrorEnum.USER_STATUS_ERROR);
         }
-        imUserDataDao.deleteUserInfoById(appId, userId);
+        imUserDataDao.deleteUserInfoById(userId);
     }
 
     // 分批方法，将用户数据拆分成多个小批次
