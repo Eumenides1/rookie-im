@@ -35,7 +35,7 @@ public class FriendShipServiceImpl implements FriendShipService {
 
     @Override
     @Transactional
-    public void newFriendshipRequest(NewFriendShipReq req) {
+    public Long newFriendshipRequest(NewFriendShipReq req) {
         // 0. 需要添加的这个人首先是要存在的
         ImUserData userInfoById = imUserDataDao.getUserInfoById(req.getReceiverId());
         AssertUtil.isNotEmpty(userInfoById, ImUserErrorEnum.USER_NOT_EXISTS);
@@ -52,9 +52,11 @@ public class FriendShipServiceImpl implements FriendShipService {
             // 更新现有申请
             pendingRequest.setAddWording(req.getAddWording());
             imFriendShipRequestDao.updateById(pendingRequest);
+            return pendingRequest.getRequestId();
         } else {
             ImFriendshipRequest imFriendshipRequest = FriendshipRequestAdapter.buildImFriendshipRequest(req);
             imFriendShipRequestDao.save(imFriendshipRequest);
+            return imFriendshipRequest.getRequestId();
         }
     }
 }

@@ -7,6 +7,8 @@ import com.rookie.stack.im.domain.dto.req.friendship.NewFriendShipReq;
  */
 public interface FriendShipService {
 
-    void newFriendshipRequest(NewFriendShipReq req);
+    Long newFriendshipRequest(NewFriendShipReq req);
+
+
 
 }

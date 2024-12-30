@@ -2,7 +2,6 @@ package com.rookie.stack.im.controller.friendship;
 
 import com.rookie.stack.common.domain.dto.resp.ApiResult;
 import com.rookie.stack.im.domain.dto.req.friendship.NewFriendShipReq;
-import com.rookie.stack.im.domain.dto.resp.app.NewAppResp;
 import com.rookie.stack.im.service.friendship.FriendShipService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -28,9 +27,9 @@ public class FriendShipController {
     private FriendShipService friendShipService;
 
     @PostMapping("/create")
-    @Operation(summary = "发送好友申请接口")
-    public ApiResult<NewAppResp> newFriendShipRequest(@RequestBody @Valid NewFriendShipReq req) {
-        friendShipService.newFriendshipRequest(req);
-        return ApiResult.success();
+    @Operation(summary = "发送好友申请接口",description = "用户发送好友申请，系统校验双方关系后创建或更新申请记录")
+    public ApiResult<Long> newFriendShipRequest(@RequestBody @Valid NewFriendShipReq req) {
+        Long requestId = friendShipService.newFriendshipRequest(req);
+        return ApiResult.success(requestId);
     }
 }

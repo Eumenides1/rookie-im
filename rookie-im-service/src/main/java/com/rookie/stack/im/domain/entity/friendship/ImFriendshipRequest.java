@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -23,6 +24,7 @@ import java.time.LocalDateTime;
 @TableName("im_friendship_request")
 public class ImFriendshipRequest implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**
@@ -30,6 +32,8 @@ public class ImFriendshipRequest implements Serializable {
      */
       @TableId(value = "id", type = IdType.AUTO)
     private Long id;
+      @TableField(value = "request_id")
+    private Long requestId;
 
     /**
      * 应用 ID，区分多租户
