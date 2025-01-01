@@ -39,5 +39,4 @@ public class BaseUserInfo {
     @Schema(description = "扩展字段，存储JSON格式的额外信息")
     private String extra;  // 存储 JSON 数据
 
-
 }

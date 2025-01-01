@@ -1,12 +1,15 @@
 package com.rookie.stack.im.service.friendship.impl;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.rookie.stack.common.utils.AssertUtil;
 import com.rookie.stack.im.common.exception.friendship.FriendShipErrorEnum;
 import com.rookie.stack.im.common.exception.user.ImUserErrorEnum;
 import com.rookie.stack.im.dao.friendship.ImFriendShipDao;
 import com.rookie.stack.im.dao.friendship.ImFriendShipRequestDao;
 import com.rookie.stack.im.dao.user.ImUserDataDao;
+import com.rookie.stack.im.domain.dto.req.friendship.GetFriendshipRequestReq;
 import com.rookie.stack.im.domain.dto.req.friendship.NewFriendShipReq;
+import com.rookie.stack.im.domain.dto.resp.friendship.FriendshipRequestData;
 import com.rookie.stack.im.domain.entity.friendship.ImFriendshipRequest;
 import com.rookie.stack.im.domain.entity.user.ImUserData;
 import com.rookie.stack.im.service.friendship.FriendShipService;
@@ -14,6 +17,8 @@ import com.rookie.stack.im.service.friendship.adapter.FriendshipRequestAdapter;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * Name：FriendShipServiceImpl
@@ -58,5 +63,18 @@ public class FriendShipServiceImpl implements FriendShipService {
             imFriendShipRequestDao.save(imFriendshipRequest);
             return imFriendshipRequest.getRequestId();
         }
+    }
+
+    @Override
+    public List<FriendshipRequestData> queryFriendshipRequests(GetFriendshipRequestReq req) {
+
+        IPage<ImFriendshipRequest> pendingRequests = imFriendShipRequestDao.findPendingRequests(req);
+
+        for (ImFriendshipRequest imFriendshipRequest : pendingRequests.getRecords()) {
+            imUserDataDao.getUserInfoById(imFriendshipRequest.getReceiverId());
+
+        }
+
+        return List.of();
     }
 }

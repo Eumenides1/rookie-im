@@ -13,13 +13,8 @@ import lombok.EqualsAndHashCode;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-@Schema(description = "操作用户资料实体")
+@Schema(description = "导入用户资料实体")
 public class ImportUserData extends BaseUserInfo {
-    @Schema(description = "应用ID")
-    private Integer appId;
-
-    @Schema(description = "用户唯一标识")
-    private Long userId;
 
     private String password;
 

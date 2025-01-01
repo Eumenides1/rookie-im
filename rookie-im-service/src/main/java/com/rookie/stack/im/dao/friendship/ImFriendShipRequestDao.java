@@ -1,7 +1,11 @@
 package com.rookie.stack.im.dao.friendship;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.rookie.stack.im.common.context.AppIdContext;
+import com.rookie.stack.im.domain.dto.req.friendship.GetFriendshipRequestReq;
 import com.rookie.stack.im.domain.entity.friendship.ImFriendshipRequest;
 import com.rookie.stack.im.mapper.friendship.ImFriendshipRequestMapper;
 import jakarta.annotation.Resource;
@@ -25,6 +29,14 @@ public class ImFriendShipRequestDao extends ServiceImpl<ImFriendshipRequestMappe
                 AppIdContext.getAppId(),
                 requesterId,receiverId
         );
+    }
+
+    public IPage<ImFriendshipRequest> findPendingRequests(GetFriendshipRequestReq req) {
+        Page page = req.plusPage();
+        LambdaQueryWrapper<ImFriendshipRequest> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(ImFriendshipRequest::getReceiverId, req.getUserId());
+        queryWrapper.orderByDesc(ImFriendshipRequest::getCreatedAt);
+        return this.page(page, queryWrapper);
     }
 
 
