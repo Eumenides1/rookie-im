@@ -18,7 +18,6 @@ import com.rookie.stack.im.domain.dto.resp.user.ImportUserResp;
 import com.rookie.stack.im.domain.entity.user.ImUserData;
 import com.rookie.stack.im.service.user.ImUserService;
 import com.rookie.stack.im.service.user.adapter.ImUserAdapter;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -28,7 +27,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 /**
@@ -41,14 +39,14 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ImUserServiceImpl implements ImUserService {
 
-    public final static Integer MAX_IMPORT_COUNT = 100;
-
-    private final static Integer EXECUTOR_COUNT = 10;
+    public final static Integer MAX_IMPORT_COUNT = 100000;
 
     private final ImUserDataDao imUserDataDao;
+    private final ExecutorService globalExecutorService;
 
-    public ImUserServiceImpl(ImUserDataDao imUserDataDao, HttpServletRequest request) {
+    public ImUserServiceImpl(ImUserDataDao imUserDataDao, ExecutorService globalExecutorService) {
         this.imUserDataDao = imUserDataDao;
+        this.globalExecutorService = globalExecutorService;
     }
 
     @Override
@@ -58,9 +56,7 @@ public class ImUserServiceImpl implements ImUserService {
         Integer appId = AppIdContext.getAppId();
 
         // 分批处理用户数据
-        List<List<ImportUserData>> userDataBatches = partitionList(importUserReq.getUserData(), 100);
-
-        ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
+        List<List<ImportUserData>> userDataBatches = partitionList(importUserReq.getUserData(), 1000);
 
         List<Callable<Void>> tasks = new ArrayList<>();
         for (List<ImportUserData> batch : userDataBatches) {
@@ -70,7 +66,7 @@ public class ImUserServiceImpl implements ImUserService {
                         .collect(Collectors.toList());
                 try {
                     // 批量插入
-                    imUserDataDao.saveBatch(imUserDataList);
+                    imUserDataDao.batchInsertUsers(imUserDataList);
                     imUserDataList.forEach(user -> successId.add(user.getUserId()));
                 } catch (Exception e) {
                     log.error("批量插入失败: {}", e.getMessage(), e);
@@ -81,11 +77,9 @@ public class ImUserServiceImpl implements ImUserService {
         }
 
         try {
-            executor.invokeAll(tasks);
+            globalExecutorService.invokeAll(tasks);
         } catch (InterruptedException e) {
             log.error("任务中断: {}", e.getMessage(), e);
-        } finally {
-            executor.shutdown();
         }
 
         ImportUserResp importUserResp = new ImportUserResp();

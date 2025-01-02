@@ -26,4 +26,7 @@ public class ImportUserData extends BaseUserInfo {
 
     @Schema(description = "用户类型，0：普通用户，1：管理员，2：其他")
     private Integer userType;
+
+    @Schema(description = "禁言标识，1：禁言")
+    private Integer silentFlag;
 }
