@@ -66,7 +66,7 @@ public class ImUserServiceImpl implements ImUserService {
                         .collect(Collectors.toList());
                 try {
                     // 批量插入
-                    imUserDataDao.batchInsertUsers(imUserDataList);
+                    imUserDataDao.saveBatch(imUserDataList);
                     imUserDataList.forEach(user -> successId.add(user.getUserId()));
                 } catch (Exception e) {
                     log.error("批量插入失败: {}", e.getMessage(), e);

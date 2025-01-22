@@ -2,6 +2,7 @@ package com.rookie.stack.im.service.friendship.impl;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.rookie.stack.common.utils.AssertUtil;
+import com.rookie.stack.im.common.constants.enums.friendship.FriendAllowTypeEnum;
 import com.rookie.stack.im.common.exception.friendship.FriendShipErrorEnum;
 import com.rookie.stack.im.common.exception.user.ImUserErrorEnum;
 import com.rookie.stack.im.dao.friendship.ImFriendShipDao;
@@ -44,6 +45,11 @@ public class FriendShipServiceImpl implements FriendShipService {
         // 0. 需要添加的这个人首先是要存在的
         ImUserData userInfoById = imUserDataDao.getUserInfoById(req.getReceiverId());
         AssertUtil.isNotEmpty(userInfoById, ImUserErrorEnum.USER_NOT_EXISTS);
+        // 要添加的这个人的添加好友状态,如果无需验证则直接建立好友关系
+        if (userInfoById.getFriendAllowType() == FriendAllowTypeEnum.NO_VERIFICATION.getCode()) {
+            // TODO 建立好友关系 并返回
+            return null;
+        }
         // TODO 校验好友关系应抽离做一个新的服务接口
         // 1. 判断两人好友关系，如果是好友，则直接返回已经是好友
         Boolean isFriend = imFriendShipDao.isFriendShipExists(req.getRequesterId(), req.getReceiverId());

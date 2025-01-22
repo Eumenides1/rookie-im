@@ -30,15 +30,6 @@ public class ImUserDataDao extends ServiceImpl<ImUserDataMapper, ImUserData> {
     @Resource
     private ImUserDataMapper imUserDataMapper;
 
-    /**
-     * 批量插入用户数据
-     *
-     * @param userList 用户数据列表
-     */
-    public void batchInsertUsers(List<ImUserData> userList) {
-        imUserDataMapper.insertBatchSomeColumn(userList);
-    }
-
     public IPage<ImUserData> getUserInfoPage( GetUserListPageReq req) {
         Page page = req.plusPage();
         LambdaQueryWrapper<ImUserData> queryWrapper = new LambdaQueryWrapper<>();
