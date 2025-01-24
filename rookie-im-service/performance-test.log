@@ -1,0 +1,27 @@
+=== 测试开始: 数据量 100 ===
+批量插入 耗时: 744 ms
+InsertBatchSomeColumn 插入 失败: Invalid bound statement (not found): com.rookie.stack.im.mapper.user.ImUserDataMapper.insertBatchSomeColumn
+InsertBatchSomeColumn 插入 耗时: 1 ms
+=== 测试结束: 数据量 100 ===
+=== 测试开始: 数据量 1000 ===
+批量插入 耗时: 429 ms
+InsertBatchSomeColumn 插入 失败: Invalid bound statement (not found): com.rookie.stack.im.mapper.user.ImUserDataMapper.insertBatchSomeColumn
+InsertBatchSomeColumn 插入 耗时: 0 ms
+=== 测试结束: 数据量 1000 ===
+=== 测试开始: 数据量 10000 ===
+批量插入 耗时: 2376 ms
+InsertBatchSomeColumn 插入 失败: Invalid bound statement (not found): com.rookie.stack.im.mapper.user.ImUserDataMapper.insertBatchSomeColumn
+InsertBatchSomeColumn 插入 耗时: 1 ms
+=== 测试结束: 数据量 10000 ===
+=== 测试开始: 数据量 100000 ===
+批量插入 失败: 
+### Error flushing statements.  Cause: org.apache.ibatis.executor.BatchExecutorException: com.rookie.stack.im.mapper.user.ImUserDataMapper.insert (batch index #1) failed. Cause: java.sql.BatchUpdateException: Communications link failure
+
+The last packet successfully received from the server was 101 milliseconds ago. The last packet sent successfully to the server was 136 milliseconds ago.
+### Cause: org.apache.ibatis.executor.BatchExecutorException: com.rookie.stack.im.mapper.user.ImUserDataMapper.insert (batch index #1) failed. Cause: java.sql.BatchUpdateException: Communications link failure
+
+The last packet successfully received from the server was 101 milliseconds ago. The last packet sent successfully to the server was 136 milliseconds ago.
+批量插入 耗时: 5781 ms
+InsertBatchSomeColumn 插入 失败: Invalid bound statement (not found): com.rookie.stack.im.mapper.user.ImUserDataMapper.insertBatchSomeColumn
+InsertBatchSomeColumn 插入 耗时: 0 ms
+=== 测试结束: 数据量 100000 ===

@@ -40,6 +40,8 @@
         <netty.version>4.1.99.Final</netty.version>
         <snakeyaml.version>2.2</snakeyaml.version>
         <saToken.version>1.39.0</saToken.version>
+        <sl4j.version>2.20.0</sl4j.version>
+        <sl4j-api.version>2.0.7</sl4j-api.version>
     </properties>
 
     <dependencyManagement>
@@ -118,6 +120,27 @@
                 <groupId>org.yaml</groupId>
                 <artifactId>snakeyaml</artifactId>
                 <version>${snakeyaml.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${sl4j-api.version}</version> <!-- 升级到 SLF4J 2.x -->
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-slf4j2-impl</artifactId>
+                <version>${sl4j.version}</version> <!-- 使用与 SLF4J 2.x 兼容的版本 -->
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-core</artifactId>
+                <version>${sl4j.version}</version> <!-- 统一 Log4j2 版本 -->
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-api</artifactId>
+                <version>${sl4j.version}</version> <!-- 统一 Log4j2 版本 -->
             </dependency>
         </dependencies>
     </dependencyManagement>

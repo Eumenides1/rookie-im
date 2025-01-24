@@ -23,7 +23,7 @@ public class Starter {
         Yaml yaml = new Yaml();
         FileInputStream fileInputStream = null;
         try {
-            fileInputStream = new FileInputStream("D:\\code\\rookie-im\\rookie-im-core\\src\\main\\resources\\rookie.yaml");
+            fileInputStream = new FileInputStream(path);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             System.exit(500);

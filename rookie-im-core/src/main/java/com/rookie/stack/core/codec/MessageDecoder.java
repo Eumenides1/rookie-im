@@ -17,10 +17,12 @@ import java.util.List;
  */
 public class MessageDecoder extends ByteToMessageDecoder {
 
+    public static final int HEADER_LENGTH = 28;
+
     @Override
     protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf in, List<Object> out) throws Exception {
 
-        if (in.readableBytes() > 28) {
+        if (in.readableBytes() < HEADER_LENGTH) {
             return;
         }
         int command = in.readInt();

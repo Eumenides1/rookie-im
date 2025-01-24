@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+status：Log4j2 自身的日志级别，默认为 ERROR
+monitorInterval：自动重新加载配置文件的间隔时间（秒），最小为 5 秒
+-->
+<Configuration status="INFO" monitorInterval="30">
+    <!-- 全局参数 -->
+    <Properties>
+        <!-- 日志打印级别 -->
+        <Property name="LOG_LEVEL">DEBUG</Property>
+        <!-- APP名称 -->
+        <Property name="APP_NAME">Mybatis</Property>
+        <!-- 日志文件存储路径 -->
+        <Property name="LOG_HOME">logs</Property>
+        <!-- 日志编码 -->
+        <Property name="CHARSET">UTF-8</Property>
+        <!-- 存储天数 -->
+        <Property name="LOG_MAX_HISTORY">60d</Property>
+        <!-- 单个日志文件最大值, 单位 = KB, MB, GB -->
+        <Property name="LOG_MAX_FILE_SIZE">10MB</Property>
+        <!-- 每天每个日志级别产生的文件最大数量 -->
+        <Property name="LOG_TOTAL_NUMBER_DAILY">100</Property>
+        <!-- 压缩文件的类型,支持zip和gz,建议Linux用gz,Windows用zip -->
+        <Property name="ARCHIVE_FILE_SUFFIX">zip</Property>
+        <!-- 日志文件名 -->
+        <Property name="LOG_FILE_NAME">${LOG_HOME}</Property>
+        <Property name="FILE_NAME_PATTERN">${LOG_HOME}/%d{yyyy-MM-dd}</Property>
+        <!-- 日志输出格式-控制台彩色打印 -->
+        <Property name="ENCODER_PATTERN_CONSOLE">%d{yyyy-MM-dd HH:mm:ss.SSS} | %highlight{%-5level}{ERROR=red, WARN=yellow, INFO=green, DEBUG=cyan, TRACE=white} | %t | %c{1.} ： %msg%n</Property>
+        <!-- 日志输出格式-文件 -->
+        <Property name="ENCODER_PATTERN">%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %5pid --- [%15.15t] %c{1.} [%L] : %msg%n</Property>
+    </Properties>
+
+    <!-- Appenders -->
+    <Appenders>
+        <!-- 控制台的输出配置 -->
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${ENCODER_PATTERN_CONSOLE}" charset="${CHARSET}"/>
+        </Console>
+
+        <!-- 包含所有级别日志的文件 Appender -->
+        <RollingFile name="RollingFileAllLevels" fileName="${LOG_FILE_NAME}/all.log"
+                     filePattern="${FILE_NAME_PATTERN}/${APP_NAME}-all.%d{yyyy-MM-dd HH.mm}-%i.log">
+            <PatternLayout pattern="${ENCODER_PATTERN}" charset="${CHARSET}"/>
+            <Policies>
+                <!-- 归档每天的文件，每天滚动一次 -->
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <!-- 限制单个文件大小，日志达到 size 滚动一次 -->
+                <SizeBasedTriggeringPolicy size="${LOG_MAX_FILE_SIZE}"/>
+            </Policies>
+            <DefaultRolloverStrategy max="${LOG_TOTAL_NUMBER_DAILY}">
+                <!-- 日志保留策略，日志只保留 60 天 -->
+                <Delete basePath="${LOG_HOME}" maxDepth="1">
+                    <IfFileName glob="*-all.*.log"/>
+                    <IfLastModified age="${LOG_MAX_HISTORY}"/>
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingFile>
+
+        <!-- INFO 级别日志的文件 Appender -->
+        <RollingFile name="RollingFileInfo" fileName="${LOG_FILE_NAME}/info.log"
+                     filePattern="${FILE_NAME_PATTERN}/${APP_NAME}-info.%d{yyyy-MM-dd HH.mm}-%i.log">
+            <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="${ENCODER_PATTERN}" charset="${CHARSET}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="${LOG_MAX_FILE_SIZE}"/>
+            </Policies>
+            <DefaultRolloverStrategy max="${LOG_TOTAL_NUMBER_DAILY}">
+                <Delete basePath="${LOG_HOME}" maxDepth="1">
+                    <IfFileName glob="*-info.*.log"/>
+                    <IfLastModified age="${LOG_MAX_HISTORY}"/>
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingFile>
+
+        <!-- DEBUG 级别日志的文件 Appender -->
+        <RollingFile name="RollingFileDebug" fileName="${LOG_FILE_NAME}/debug.log"
+                     filePattern="${FILE_NAME_PATTERN}/${APP_NAME}-debug.%d{yyyy-MM-dd HH.mm}-%i.log">
+            <ThresholdFilter level="DEBUG" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="${ENCODER_PATTERN}" charset="${CHARSET}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="${LOG_MAX_FILE_SIZE}"/>
+            </Policies>
+            <DefaultRolloverStrategy max="${LOG_TOTAL_NUMBER_DAILY}">
+                <Delete basePath="${LOG_HOME}" maxDepth="1">
+                    <IfFileName glob="*-debug.*.log"/>
+                    <IfLastModified age="${LOG_MAX_HISTORY}"/>
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingFile>
+
+        <!-- WARN 级别日志的文件 Appender -->
+        <RollingFile name="RollingFileWarn" fileName="${LOG_FILE_NAME}/warn.log"
+                     filePattern="${FILE_NAME_PATTERN}/${APP_NAME}-warn.%d{yyyy-MM-dd HH.mm}-%i.log">
+            <ThresholdFilter level="WARN" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="${ENCODER_PATTERN}" charset="${CHARSET}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="${LOG_MAX_FILE_SIZE}"/>
+            </Policies>
+            <DefaultRolloverStrategy max="${LOG_TOTAL_NUMBER_DAILY}">
+                <Delete basePath="${LOG_HOME}" maxDepth="1">
+                    <IfFileName glob="*-warn.*.log"/>
+                    <IfLastModified age="${LOG_MAX_HISTORY}"/>
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingFile>
+
+        <!-- ERROR 级别日志的文件 Appender -->
+        <RollingFile name="RollingFileError" fileName="${LOG_FILE_NAME}/error.log"
+                     filePattern="${FILE_NAME_PATTERN}/${APP_NAME}-error.%d{yyyy-MM-dd HH.mm}-%i.log">
+            <ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="${ENCODER_PATTERN}" charset="${CHARSET}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="${LOG_MAX_FILE_SIZE}"/>
+            </Policies>
+            <DefaultRolloverStrategy max="${LOG_TOTAL_NUMBER_DAILY}">
+                <Delete basePath="${LOG_HOME}" maxDepth="1">
+                    <IfFileName glob="*-error.*.log"/>
+                    <IfLastModified age="${LOG_MAX_HISTORY}"/>
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingFile>
+    </Appenders>
+
+    <!-- Loggers -->
+    <Loggers>
+        <!-- Root Logger -->
+        <Root level="${LOG_LEVEL}">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="RollingFileAllLevels"/>
+            <AppenderRef ref="RollingFileInfo"/>
+            <AppenderRef ref="RollingFileDebug"/>
+            <AppenderRef ref="RollingFileWarn"/>
+            <AppenderRef ref="RollingFileError"/>
+        </Root>
+        <!-- 单独配置 Netty 的日志级别为 INFO -->
+        <Logger name="io.netty" level="INFO" additivity="false">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="RollingFileInfo"/>
+        </Logger>
+    </Loggers>
+</Configuration>

@@ -5,7 +5,6 @@ import threading
 import time
 import uuid
 
-
 imei = str(uuid.uuid1())
 
 s=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
@@ -37,4 +36,4 @@ bodyLenBytes = body_len.to_bytes(4,'big')
 
 # s.sendall(commandByte + versionByte + clientTypeByte + messageTypeByte + appIdByte + imeiLengthByte + bodyLenBytes + imeiBytes + body)
 for x in range(100):
-  s.sendall(commandByte + versionByte + cl
+  s.sendall(commandByte + versionByte + clientTypeByte + messageTypeByte + appIdByte + imeiLengthByte + bodyLenBytes  + imeiBytes + body)
