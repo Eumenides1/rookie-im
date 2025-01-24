@@ -1,27 +1,41 @@
 package com.rookie.stack.platform.service.impl;
 
+import cn.dev33.satoken.stp.StpUtil;
 import com.rookie.stack.common.exception.BusinessException;
 import com.rookie.stack.common.utils.AssertUtil;
-
+import com.rookie.stack.platform.common.constants.enums.PlatformAccessKeyStatusEnum;
+import com.rookie.stack.platform.common.constants.enums.PlatformUserTypeEnum;
 import com.rookie.stack.platform.common.exception.EmailServerErrorEnum;
 import com.rookie.stack.platform.common.exception.PlatUserErrorEnum;
-import com.rookie.stack.platform.common.utils.JwtUtils;
+import com.rookie.stack.platform.common.utils.DesensitizationUtil;
 import com.rookie.stack.platform.common.utils.RedisUtil;
+import com.rookie.stack.platform.dao.PlatformUserAccessKeyDao;
 import com.rookie.stack.platform.dao.PlatformUserDao;
-import com.rookie.stack.platform.domain.dto.req.PlatformUserLoginReq;
-import com.rookie.stack.platform.domain.dto.req.PlatformUserRegisterReq;
-import com.rookie.stack.platform.domain.dto.resp.PlatformUserLoginResp;
+import com.rookie.stack.platform.dao.PlatformUserRoleDao;
+import com.rookie.stack.platform.domain.bo.AccessKey;
 import com.rookie.stack.platform.domain.entity.PlatformUser;
+import com.rookie.stack.platform.domain.entity.PlatformUserAccessKey;
+import com.rookie.stack.platform.domain.entity.PlatformUserRole;
+import com.rookie.stack.platform.domain.req.PlatformUserLoginReq;
+import com.rookie.stack.platform.domain.req.PlatformUserRegisterReq;
+import com.rookie.stack.platform.domain.resp.LoginResp;
+import com.rookie.stack.platform.domain.vo.FrontUserInfo;
 import com.rookie.stack.platform.service.PlatformUserService;
+import com.rookie.stack.platform.service.adapter.PlatformAccessKeyAdapter;
 import com.rookie.stack.platform.service.adapter.PlatformUserAdapter;
 import com.rookie.stack.push.MessagePushService;
 import jakarta.annotation.Resource;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.security.SecureRandom;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
+
+import static com.rookie.stack.platform.common.constants.constants.AppConstants.COMMON_APPID;
 
 /**
  * Name：PlatformUserServiceImpl
@@ -32,6 +46,14 @@ import java.util.Random;
 @Service
 public class PlatformUserServiceImpl implements PlatformUserService {
 
+    private static final String VERIFY_KEY_PREFIX = "email:verify:";
+    private static final int CODE_LENGTH = 6;
+    private static final int CODE_EXPIRATION_SECONDS = 600; // 10分钟
+
+    private static final String CHAR_POOL = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    private static final int DEFAULT_ACCESS_KEY_LENGTH = 32;
+    private static final int DEFAULT_SECRET_KEY_LENGTH = 64;
+
     @Resource
     private MessagePushService emailPushService;
 
@@ -39,14 +61,16 @@ public class PlatformUserServiceImpl implements PlatformUserService {
     private RedisUtil redisUtil;
 
     @Resource
-    private JwtUtils jwtUtils;
-
-    @Resource
     private PlatformUserDao platformUserDao;
 
-    private static final String VERIFY_KEY_PREFIX = "email:verify:";
-    private static final int CODE_LENGTH = 6;
-    private static final int CODE_EXPIRATION_SECONDS = 600; // 10分钟
+    @Resource
+    private PlatformUserAccessKeyDao platformUserAccessKeyDao;
+
+    @Resource
+    private PlatformUserRoleDao platformUserRoleDao;
+
+    @Resource
+    private SecureRandom secureRandom;
 
 
     @Override
@@ -85,6 +109,7 @@ public class PlatformUserServiceImpl implements PlatformUserService {
     }
 
     @Override
+    @Transactional
     public void platformUserRegister(PlatformUserRegisterReq registerReq) {
         // 验证验证码是否合法
         boolean verified = this.verifyCode(registerReq.getEmail(), registerReq.getVerificationCode());
@@ -100,24 +125,69 @@ public class PlatformUserServiceImpl implements PlatformUserService {
         }
         PlatformUser platformUser = PlatformUserAdapter.buildRegisterUser(registerReq);
         platformUserDao.save(platformUser);
+        // 注册主账号 配置主账号默认权限
+        platformUserRoleDao.save(new PlatformUserRole(platformUser.getUserId(),COMMON_APPID, PlatformUserTypeEnum.MAIN_ACCOUNT.getStatus().longValue()));
     }
 
     @Override
-    public PlatformUserLoginResp login(PlatformUserLoginReq loginReq) {
+    public LoginResp login(PlatformUserLoginReq loginReq) {
         // 根据邮箱判断如果用户已经存在了，就直接返回
         PlatformUser byEmail = platformUserDao.getByEmail(loginReq.getEmail());
         AssertUtil.isNotEmpty(byEmail,PlatUserErrorEnum.EMAIL_OR_PASSWORD_ERROR);
-
         // 校验密码
         if (!new BCryptPasswordEncoder().matches(loginReq.getPassword(), byEmail.getPassword())) {
             throw new BusinessException(PlatUserErrorEnum.EMAIL_OR_PASSWORD_ERROR);
         }
+        StpUtil.login(byEmail.getUserId());
+        FrontUserInfo frontUserInfo = platformUserDao.getFrontUserInfo(byEmail.getUserId());
+        return new LoginResp(frontUserInfo, StpUtil.getTokenInfo());
+    }
 
-        // 4. 生成 Access Token 和 Refresh Token
-        String accessToken = jwtUtils.generateAccessToken(byEmail.getUserId(), byEmail.getUsername());
-        String refreshToken = jwtUtils.generateRefreshToken(byEmail.getUserId());
+    @Override
+    public AccessKey getAccessKey() {
+        long userId = StpUtil.getLoginIdAsLong();
+        PlatformUserAccessKey userAccessKey = platformUserAccessKeyDao.getByUserId(userId);
+        if (userAccessKey == null) {
+            // 首次查询，或禁用现有 ak 后查询，则生成新 ak sk 并明文返回
+            AccessKey accessKey = this.generateAccessKeys();
+            userAccessKey = PlatformAccessKeyAdapter.buildPlatformUserAccessKey(userId, accessKey);
+            platformUserAccessKeyDao.save(userAccessKey);
+            return accessKey;
+        }
+        // 如果是首次生成后查询，则返回 ak 和脱敏后的 sk
+        return new AccessKey(userAccessKey.getAccessKey(), DesensitizationUtil.desensitize(userAccessKey.getSecretKey(),3,3));
+    }
 
-        return new PlatformUserLoginResp(accessToken, refreshToken,jwtUtils.getAccessTokenExpiration());
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED)
+    public AccessKey newAccessKey() {
+        long userId = StpUtil.getLoginIdAsLong();
+        PlatformUserAccessKey userAccessKey = platformUserAccessKeyDao.getByUserId(userId);
+        // 如果有可用 ak，那先将可用 ak 设置为不可用，然后生成新的保存
+        if (userAccessKey != null) {
+            userAccessKey.setStatus(PlatformAccessKeyStatusEnum.FREEZE.getStatus().byteValue());
+            platformUserAccessKeyDao.updateById(userAccessKey);
+        }
+        // 生成新的 ak，返回
+        AccessKey accessKey = this.generateAccessKeys();
+        PlatformUserAccessKey newAccessKey = PlatformAccessKeyAdapter.buildPlatformUserAccessKey(userId, accessKey);
+        platformUserAccessKeyDao.save(newAccessKey);
+        return accessKey;
+    }
+
+    private AccessKey generateAccessKeys() {
+        String accessKey = generateRandomString(DEFAULT_ACCESS_KEY_LENGTH);
+        String secretKey = generateRandomString(DEFAULT_SECRET_KEY_LENGTH);
+        return new AccessKey(accessKey, secretKey);
+    }
+
+    private String generateRandomString(int length) {
+        StringBuilder sb = new StringBuilder(length);
+        for (int i = 0; i < length; i++) {
+            int index = secureRandom.nextInt(CHAR_POOL.length());
+            sb.append(CHAR_POOL.charAt(index));
+        }
+        return sb.toString();
     }
 
     private String generateRandomCode() {

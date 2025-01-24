@@ -13,7 +13,8 @@ import lombok.Getter;
 @Getter
 public enum ImUserErrorEnum implements ErrorEnum {
     OUT_BOUND_MAX_IMPORT(-1001,"导入用户数量超过最大限制"),
-    USER_STATUS_ERROR(-1002, "用户状态错误")
+    USER_STATUS_ERROR(-1002, "用户状态错误"),
+    USER_NOT_EXISTS(-1003,"该用户不存在")
     ;
     private Integer code;
     private String msg;

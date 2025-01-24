@@ -1,19 +1,16 @@
 package com.rookie.stack.platform.controller;
 
 import com.rookie.stack.common.domain.dto.resp.ApiResult;
-
-import com.rookie.stack.platform.domain.dto.req.PlatformUserLoginReq;
-import com.rookie.stack.platform.domain.dto.req.PlatformUserRegisterReq;
-import com.rookie.stack.platform.domain.dto.resp.PlatformUserLoginResp;
+import com.rookie.stack.platform.domain.bo.AccessKey;
+import com.rookie.stack.platform.domain.req.PlatformUserLoginReq;
+import com.rookie.stack.platform.domain.req.PlatformUserRegisterReq;
+import com.rookie.stack.platform.domain.resp.LoginResp;
 import com.rookie.stack.platform.service.PlatformUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * Name：PlatformUserController
@@ -37,8 +34,18 @@ public class PlatformUserController {
     }
     @PostMapping("/login")
     @Operation(summary = "平台用户登录接口")
-    public ApiResult<PlatformUserLoginResp> login(@RequestBody @Valid PlatformUserLoginReq loginReq) {
-        return ApiResult.success(platformUserService.login(loginReq));
+    public ApiResult<LoginResp> login(@RequestBody @Valid PlatformUserLoginReq loginReq) {
+        LoginResp login = platformUserService.login(loginReq);
+        return ApiResult.success(login);
     }
-
+    @GetMapping("/accessKey")
+    @Operation(summary = "获取账户 ak、sk 接口")
+    public ApiResult<AccessKey> getAccessKey() {
+        return ApiResult.success(platformUserService.getAccessKey());
+    }
+    @PostMapping("/newAccessKey")
+    @Operation(summary = "更新账户 ak、sk 接口")
+    public ApiResult<AccessKey> newAccessKey() {
+         return ApiResult.success(platformUserService.newAccessKey());
+    }
 }

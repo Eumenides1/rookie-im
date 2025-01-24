@@ -4,6 +4,7 @@ import com.rookie.stack.common.domain.dto.resp.ApiResult;
 import com.rookie.stack.common.exception.BusinessException;
 import com.rookie.stack.common.exception.CommonErrorEnum;
 import com.rookie.stack.im.common.exception.AppIdMissingException;
+import jakarta.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -30,7 +31,7 @@ public class GlobalExceptionHandler {
         StringBuilder errorMsg = new StringBuilder();
         e.getBindingResult().getFieldErrors().forEach(x -> errorMsg.append(x.getField()).append(x.getDefaultMessage()).append(","));
         String message = errorMsg.toString();
-        log.info("validation parameters error！The reason is:{}", message);
+        log.error("validation parameters error！The reason is:{}", message);
         return ApiResult.fail(CommonErrorEnum.PARAM_VALID.getErrorCode(), message.substring(0, message.length() - 1));
     }
 
@@ -40,10 +41,15 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(value = BusinessException.class)
     public ApiResult businessExceptionHandler(BusinessException e) {
-        log.info("business exception！The reason is：{}", e.getMessage(), e);
+        log.error("business exception！The reason is：{}", e.getMessage(), e);
         return ApiResult.fail(e.getErrorCode(), e.getMessage());
     }
-
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(value = ValidationException.class)
+    public ApiResult validationExceptionHandler(ValidationException e) {
+        log.error("validation exception!The reason is：{}",e.getMessage(), e);
+        return ApiResult.fail(CommonErrorEnum.PARAM_VALID.getErrorCode(),e.getMessage());
+    }
     /**
      * 处理空指针的异常
      */

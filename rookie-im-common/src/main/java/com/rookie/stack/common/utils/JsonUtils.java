@@ -64,4 +64,21 @@ public class JsonUtils {
         }
     }
 
+    /**
+     * 验证字符串是否是合法的 JSON
+     * @param jsonString 待验证的字符串
+     * @return true 如果是合法 JSON；否则 false
+     */
+    public static boolean isValidJson(String jsonString) {
+        if (jsonString == null || jsonString.isEmpty()) {
+            return false;
+        }
+        try {
+            jsonMapper.readTree(jsonString);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
 }

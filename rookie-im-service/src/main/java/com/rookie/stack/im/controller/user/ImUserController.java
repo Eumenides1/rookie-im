@@ -17,6 +17,8 @@ import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 
+import java.util.List;
+
 import static com.rookie.stack.im.service.user.impl.ImUserServiceImpl.MAX_IMPORT_COUNT;
 
 /**
@@ -64,5 +66,13 @@ public class ImUserController {
     public ApiResult<Void> deleteUser(@PathVariable Long userId) {
         imUserService.deleteUserById(userId);
         return ApiResult.success();
+    }
+    @GetMapping("/search")
+    @Operation(summary = "搜索用户信息")
+    public ApiResult<List<GetUserInfoResp>> searchUsers(@RequestParam(required = false) String phone,
+                                       @RequestParam(required = false) String email,
+                                       @RequestParam(required = false) Long userId,
+                                       @RequestParam(required = false) Integer userType){
+        return ApiResult.success(imUserService.searchUser(phone,email,userId,userType));
     }
 }

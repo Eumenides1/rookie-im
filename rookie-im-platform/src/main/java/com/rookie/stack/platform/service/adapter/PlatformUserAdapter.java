@@ -1,10 +1,10 @@
 package com.rookie.stack.platform.service.adapter;
 
 
-import com.rookie.stack.platform.domain.dto.req.PlatformUserRegisterReq;
+import com.rookie.stack.platform.domain.req.PlatformUserRegisterReq;
 import com.rookie.stack.platform.domain.entity.PlatformUser;
-import com.rookie.stack.platform.domain.enums.PlatformUserStatusEnum;
-import com.rookie.stack.platform.domain.enums.PlatformUserTypeEnum;
+import com.rookie.stack.platform.common.constants.enums.PlatformUserStatusEnum;
+import com.rookie.stack.platform.common.constants.enums.PlatformUserTypeEnum;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 /**

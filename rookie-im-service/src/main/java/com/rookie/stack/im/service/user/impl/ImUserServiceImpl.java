@@ -5,27 +5,29 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.rookie.stack.common.domain.dto.resp.PageBaseResp;
 import com.rookie.stack.common.exception.BusinessException;
 import com.rookie.stack.common.utils.AssertUtil;
+import com.rookie.stack.im.common.constants.enums.user.ImUserStatusEnum;
 import com.rookie.stack.im.common.context.AppIdContext;
 import com.rookie.stack.im.common.exception.user.ImUserErrorEnum;
 import com.rookie.stack.im.dao.user.ImUserDataDao;
-import com.rookie.stack.im.domain.entity.user.ImUserData;
-import com.rookie.stack.im.domain.enums.user.ImUserStatusEnum;
 import com.rookie.stack.im.domain.dto.req.user.GetUserListPageReq;
 import com.rookie.stack.im.domain.dto.req.user.ImportUserData;
 import com.rookie.stack.im.domain.dto.req.user.ImportUserReq;
 import com.rookie.stack.im.domain.dto.req.user.UpdateUserInfoReq;
 import com.rookie.stack.im.domain.dto.resp.user.GetUserInfoResp;
 import com.rookie.stack.im.domain.dto.resp.user.ImportUserResp;
+import com.rookie.stack.im.domain.entity.user.ImUserData;
 import com.rookie.stack.im.service.user.ImUserService;
 import com.rookie.stack.im.service.user.adapter.ImUserAdapter;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.stream.Collectors;
 
 /**
  * Name：ImUserServiceImpl
@@ -37,72 +39,58 @@ import java.util.concurrent.*;
 @Slf4j
 public class ImUserServiceImpl implements ImUserService {
 
-    public final static Integer MAX_IMPORT_COUNT = 100;
-
-    private final static Integer EXECUTOR_COUNT = 10;
+    public final static Integer MAX_IMPORT_COUNT = 100000;
 
     private final ImUserDataDao imUserDataDao;
-    private final HttpServletRequest request;
+    private final ExecutorService globalExecutorService;
 
-    public ImUserServiceImpl(ImUserDataDao imUserDataDao, HttpServletRequest request) {
+    public ImUserServiceImpl(ImUserDataDao imUserDataDao, ExecutorService globalExecutorService) {
         this.imUserDataDao = imUserDataDao;
-        this.request = request;
+        this.globalExecutorService = globalExecutorService;
     }
 
     @Override
     public ImportUserResp importUsers(ImportUserReq importUserReq) {
-        List<Long> successId = new ArrayList<>();
-        List<Long> failedId = new ArrayList<>();
+        List<Long> successId = Collections.synchronizedList(new ArrayList<>());
+        List<Long> failedId = Collections.synchronizedList(new ArrayList<>());
         Integer appId = AppIdContext.getAppId();
-        // 线程池用于并发处理导入
-        ExecutorService executor = Executors.newFixedThreadPool(EXECUTOR_COUNT);  // 线程池大小可以根据实际情况调整
-        List<Callable<Void>> tasks = new ArrayList<>();
-        // 将用户数据分批处理，每批 100 条
-        List<List<ImportUserData>> userDataBatches = partitionList(importUserReq.getUserData(), MAX_IMPORT_COUNT);
 
-        // 创建并发任务
+        // 分批处理用户数据
+        List<List<ImportUserData>> userDataBatches = partitionList(importUserReq.getUserData(), 1000);
+
+        List<Callable<Void>> tasks = new ArrayList<>();
         for (List<ImportUserData> batch : userDataBatches) {
             tasks.add(() -> {
-                for (ImportUserData importUserData : batch) {
-                    ImUserData imUserData = ImUserAdapter.buildImUserData(importUserData, appId);
-                    try {
-                        boolean save = imUserDataDao.save(imUserData);
-                        if (save) {
-                            successId.add(imUserData.getUserId());
-                        } else {
-                            failedId.add(imUserData.getUserId());
-                        }
-                    } catch (Exception e) {
-                        log.error("用户资料导入异常，用户ID: {}, 异常信息: {}", imUserData.getUserId(), e.getMessage(), e);
-                        failedId.add(imUserData.getUserId());
-                    }
+                List<ImUserData> imUserDataList = batch.stream()
+                        .map(data -> ImUserAdapter.buildImUserData(data, appId))
+                        .collect(Collectors.toList());
+                try {
+                    // 批量插入
+                    imUserDataDao.saveBatch(imUserDataList);
+                    imUserDataList.forEach(user -> successId.add(user.getUserId()));
+                } catch (Exception e) {
+                    log.error("批量插入失败: {}", e.getMessage(), e);
+                    imUserDataList.forEach(user -> failedId.add(user.getUserId()));
                 }
                 return null;
             });
         }
-        // 执行并发任务
+
         try {
-            List<Future<Void>> futures = executor.invokeAll(tasks);
-            // 等待所有任务完成
-            for (Future<Void> future : futures) {
-                future.get();  // 获取结果，以确保任务完成
-            }
-        } catch (InterruptedException | ExecutionException e) {
-            log.error("批量导入异常，异常信息: {}", e.getMessage(), e);
-        } finally {
-            executor.shutdown();
+            globalExecutorService.invokeAll(tasks);
+        } catch (InterruptedException e) {
+            log.error("任务中断: {}", e.getMessage(), e);
         }
+
         ImportUserResp importUserResp = new ImportUserResp();
         importUserResp.setSuccessUsers(successId);
         importUserResp.setFailUsers(failedId);
-
         return importUserResp;
     }
 
     @Override
     public PageBaseResp<GetUserInfoResp> queryUsers(GetUserListPageReq getUserListPageReq) {
-        Integer appId = AppIdContext.getAppId();
-        IPage<ImUserData> imUserDataIPage = imUserDataDao.getUserInfoPage(appId, getUserListPageReq);
+        IPage<ImUserData> imUserDataIPage = imUserDataDao.getUserInfoPage(getUserListPageReq);
 
         if (CollectionUtil.isEmpty(imUserDataIPage.getRecords())) {
             return PageBaseResp.empty();
@@ -112,8 +100,7 @@ public class ImUserServiceImpl implements ImUserService {
 
     @Override
     public GetUserInfoResp queryUserById(Long userId) {
-        Integer appId = AppIdContext.getAppId();
-        ImUserData userInfoById = imUserDataDao.getUserInfoById(appId, userId);
+        ImUserData userInfoById = imUserDataDao.getUserInfoById(userId);
         AssertUtil.isNotEmpty(userInfoById, "用户信息不存在！");
         return ImUserAdapter.buildBaseUserInfo(userInfoById);
     }
@@ -122,26 +109,32 @@ public class ImUserServiceImpl implements ImUserService {
     public void updateUserInfo(UpdateUserInfoReq req) {
         Integer appId = AppIdContext.getAppId();
         // 判断用户信息有效性
-        ImUserData userInfoById = imUserDataDao.getUserInfoById(appId, req.getUserId());
+        ImUserData userInfoById = imUserDataDao.getUserInfoById(req.getUserId());
         AssertUtil.isNotEmpty(userInfoById, "用户信息不存在！");
         // 用户状态需要为启用状态
         if (!Objects.equals(userInfoById.getForbiddenFlag(), ImUserStatusEnum.ENABLED.getStatus())) {
             throw new BusinessException(ImUserErrorEnum.USER_STATUS_ERROR);
         }
-        imUserDataDao.updateUserInfoById(appId, req);
+        imUserDataDao.updateUserInfoById(req);
     }
 
     @Override
     public void deleteUserById(Long userId) {
         Integer appId = AppIdContext.getAppId();
         // 判断用户信息有效性
-        ImUserData userInfoById = imUserDataDao.getUserInfoById(appId, userId);
+        ImUserData userInfoById = imUserDataDao.getUserInfoById(userId);
         AssertUtil.isNotEmpty(userInfoById, "用户信息不存在！");
         // 用户状态需要为启用状态
         if (!Objects.equals(userInfoById.getDelFlag(), ImUserStatusEnum.NOT_DELETED.getStatus())) {
             throw new BusinessException(ImUserErrorEnum.USER_STATUS_ERROR);
         }
-        imUserDataDao.deleteUserInfoById(appId, userId);
+        imUserDataDao.deleteUserInfoById(userId);
+    }
+
+    @Override
+    public List<GetUserInfoResp> searchUser(String phone, String email, Long userId, Integer userType) {
+        List<ImUserData> userData = imUserDataDao.searchUsers(phone, email, userId, userType);
+        return ImUserAdapter.buildBaseUserInfo(userData);
     }
 
     // 分批方法，将用户数据拆分成多个小批次

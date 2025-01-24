@@ -7,7 +7,7 @@ import com.rookie.stack.platform.common.annotations.RateLimiter;
 import com.rookie.stack.platform.common.annotations.RateLimiters;
 import com.rookie.stack.platform.common.utils.IpUtil;
 import com.rookie.stack.platform.common.utils.RedisUtil;
-import com.rookie.stack.platform.domain.dto.req.GetVerificationCodeReq;
+import com.rookie.stack.platform.domain.req.GetVerificationCodeReq;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import org.aspectj.lang.ProceedingJoinPoint;

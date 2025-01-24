@@ -130,6 +130,11 @@ public class AssertUtil {
             throwException(msg);
         }
     }
+    public static void isEmpty(Object obj, ErrorEnum errorEnum, Object... args) {
+        if (!isEmpty(obj)) {
+            throwException(errorEnum, args);
+        }
+    }
 
     public static void equal(Object o1, Object o2, String msg) {
         if (!ObjectUtil.equal(o1, o2)) {
