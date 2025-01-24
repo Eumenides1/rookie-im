@@ -21,6 +21,7 @@
         <module>rookie-im-service</module>
         <module>rookie-im-common</module>
         <module>rookie-im-platform</module>
+        <module>rookie-im-core</module>
     </modules>
 
     <properties>
@@ -35,6 +36,9 @@
         <knife4j.version>4.4.0</knife4j.version>
         <mail.version>1.6.2</mail.version>
         <freemaker.version>2.3.31</freemaker.version>
+        <jwt.version>0.11.5</jwt.version>
+        <netty.version>4.1.99.Final</netty.version>
+        <snakeyaml.version>2.2</snakeyaml.version>
         <saToken.version>1.39.0</saToken.version>
     </properties>
 
@@ -104,6 +108,16 @@
                 <groupId>cn.dev33</groupId>
                 <artifactId>sa-token-alone-redis</artifactId>
                 <version>${saToken.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-all</artifactId>
+                <version>${netty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.yaml</groupId>
+                <artifactId>snakeyaml</artifactId>
+                <version>${snakeyaml.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
