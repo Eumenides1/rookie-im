@@ -1,5 +1,9 @@
 package com.rookie.stack.core.context;
 
+import cn.hutool.http.Header;
+import com.rookie.stack.core.codec.pack.LoginPack;
+import com.rookie.stack.core.codec.proto.MessageHeader;
+import lombok.Builder;
 import lombok.Data;
 
 /**
@@ -9,6 +13,7 @@ import lombok.Data;
  * @Created by liujiapeng
  */
 @Data
+@Builder
 public class UserSession {
 
     private String userId;
@@ -20,6 +25,15 @@ public class UserSession {
     private Integer version;
 
     private Integer connectState;
+
+    public static UserSession fromHeaderAndPack(MessageHeader header, LoginPack pack) {
+        return UserSession.builder()
+                .appId(header.getAppId())
+                .clientType(header.getClientType())
+                .userId(pack.getUserId())
+                .connectState(UserSession.ConnectState.ONLINE_STATUS.getCode())
+                .build();
+    }
 
     public enum ConnectState {
         ONLINE_STATUS(1),

@@ -1,24 +1,16 @@
 package com.rookie.stack.core.handler;
 
-import cn.hutool.json.JSONObjectIter;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.TypeReference;
-import com.rookie.stack.core.codec.pack.LoginPack;
 import com.rookie.stack.core.codec.proto.Message;
-import com.rookie.stack.core.constants.Constants;
-import com.rookie.stack.core.context.SessionSocketContext;
-import com.rookie.stack.core.context.UserSession;
+import com.rookie.stack.core.context.SessionManager;
 import com.rookie.stack.core.enums.SystemCommand;
-import com.rookie.stack.core.utils.redis.RedisManager;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.util.AttributeKey;
-import org.redisson.api.RMap;
-import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.Map;
 
 /**
  * @Classname NettyServerHandler
@@ -28,27 +20,31 @@ import org.slf4j.LoggerFactory;
  */
 public class NettyServerHandler extends SimpleChannelInboundHandler<Message> {
 
-    private static Logger logger = LoggerFactory.getLogger(NettyServerHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(NettyServerHandler.class);
+    private static final Map<SystemCommand, CommandHandler> HANDLERS = initHandlers();
+    private static Map<SystemCommand, CommandHandler> initHandlers() {
+        Map<SystemCommand, CommandHandler> map = new EnumMap<>(SystemCommand.class);
+        map.put(SystemCommand.LOGIN, new LoginCommandHandler());
+        map.put(SystemCommand.LOGOUT, new LogoutCommandHandler());
+        return Collections.unmodifiableMap(map);
+    }
+
 
     @Override
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, Message message) throws Exception {
-        logger.info(message.toString());
-        Integer command = message.getHeader().getCommand();
-        // 登录Command
-        if (command == SystemCommand.LOGIN.getCommand()) {
-            LoginPack pack = JSON.parseObject(JSONObject.toJSONString(message.getMessagePack()),
-                    new TypeReference<LoginPack>() {}.getType());
-            channelHandlerContext.channel().attr(AttributeKey.valueOf("userId")).set(pack.getUserId());
-            // 将channel存起来
-            UserSession userSession = new UserSession();
-            userSession.setAppId(message.getHeader().getAppId());
-            userSession.setClientType(message.getHeader().getClientType());
-            userSession.setUserId(pack.getUserId());
-            userSession.setConnectState(UserSession.ConnectState.ONLINE_STATUS.getCode());
-            RedissonClient client = RedisManager.getRedissonClient();
-            RMap<String , String> map = client.getMap(message.getHeader().getAppId() + Constants.RedisConstants.USER_SESSION + pack.getUserId());
-            map.put(message.getHeader().getClientType()+"", JSONObject.toJSONString(userSession));
-            SessionSocketContext.put(pack.getUserId(), (NioSocketChannel) channelHandlerContext.channel());
+        SystemCommand command = SystemCommand.match(message.getHeader().getCommand());
+        CommandHandler handler = HANDLERS.get(command);
+        if (handler != null) {
+            handler.handle(channelHandlerContext, message);
+        } else {
+            logger.warn("Unsupported command: {}", command);
         }
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+        logger.error("Channel error: {}", ctx.channel().id(), cause);
+        SessionManager.removeSession(ctx);
+        ctx.close();
     }
 }

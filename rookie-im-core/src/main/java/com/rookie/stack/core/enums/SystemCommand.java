@@ -1,5 +1,7 @@
 package com.rookie.stack.core.enums;
 
+import java.util.Arrays;
+
 /**
  * @Classname SystemCommand
  * @Description 系统相关指令
@@ -10,7 +12,9 @@ public enum SystemCommand implements Command {
     /**
      * 登录 9000
      */
-    LOGIN(0x2328);
+    LOGIN(0x2328),
+    LOGOUT(0x232b),
+    UNKNOWN(-1);
     private int command;
     SystemCommand(int command) {
         this.command = command;
@@ -18,5 +22,12 @@ public enum SystemCommand implements Command {
     @Override
     public int getCommand() {
         return command;
+    }
+
+    public static SystemCommand match(Integer commandCode) {
+        return Arrays.stream(values())
+                .filter(cmd -> cmd.command == commandCode)
+                .findFirst()
+                .orElse(UNKNOWN);
     }
 }
