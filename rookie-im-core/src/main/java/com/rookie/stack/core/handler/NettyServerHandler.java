@@ -26,6 +26,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<Message> {
         Map<SystemCommand, CommandHandler> map = new EnumMap<>(SystemCommand.class);
         map.put(SystemCommand.LOGIN, new LoginCommandHandler());
         map.put(SystemCommand.LOGOUT, new LogoutCommandHandler());
+        map.put(SystemCommand.PING, new PingCommandHandler());
         return Collections.unmodifiableMap(map);
     }
 

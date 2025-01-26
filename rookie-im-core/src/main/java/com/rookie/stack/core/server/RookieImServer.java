@@ -2,6 +2,7 @@ package com.rookie.stack.core.server;
 
 import com.rookie.stack.core.codec.MessageDecoder;
 import com.rookie.stack.core.config.BootStrapConfig;
+import com.rookie.stack.core.handler.HeartBeatHandler;
 import com.rookie.stack.core.handler.NettyServerHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelInitializer;
@@ -10,6 +11,7 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.timeout.IdleStateHandler;
 
 /**
  * @Classname RookieImServer
@@ -39,6 +41,10 @@ public class RookieImServer {
                     @Override
                     protected void initChannel(SocketChannel socketChannel) throws Exception {
                         socketChannel.pipeline().addLast(new MessageDecoder());
+                        socketChannel.pipeline().addLast(new IdleStateHandler(
+                                0,0,30
+                        ));
+                        socketChannel.pipeline().addLast(new HeartBeatHandler(config.getHeartBeatTime()));
                         socketChannel.pipeline().addLast(new NettyServerHandler());
                     }
                 });

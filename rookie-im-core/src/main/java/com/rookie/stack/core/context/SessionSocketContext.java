@@ -49,7 +49,7 @@ public class SessionSocketContext {
             }
         }
     }
-    public static void remove(NioSocketChannel channel) {
+    public static void removeByChannel(NioSocketChannel channel) {
         CHANNEL_TRI_MAP.forEach((appId, appMap) -> {
             appMap.forEach((userId, userMap) -> {
                 userMap.entrySet().removeIf(entry -> entry.getValue() == channel);
@@ -62,4 +62,6 @@ public class SessionSocketContext {
             }
         });
     }
+
+
 }

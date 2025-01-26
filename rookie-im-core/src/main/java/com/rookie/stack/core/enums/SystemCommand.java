@@ -14,6 +14,8 @@ public enum SystemCommand implements Command {
      */
     LOGIN(0x2328),
     LOGOUT(0x232b),
+    RECONNECT(0x2330),
+    PING(0x270f),
     UNKNOWN(-1);
     private int command;
     SystemCommand(int command) {

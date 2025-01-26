@@ -10,6 +10,8 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.AttributeKey;
 import org.redisson.api.RMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @Classname SessionManager
@@ -18,6 +20,7 @@ import org.redisson.api.RMap;
  * @Created by liujiapeng
  */
 public class SessionManager {
+    private static final Logger logger = LoggerFactory.getLogger(SessionManager.class);
     private static final AttributeKey<String> USER_ID = AttributeKey.valueOf(Constants.UserId);
     private static final AttributeKey<Integer> APP_ID = AttributeKey.valueOf(Constants.AppId);
     private static final AttributeKey<Integer> CLIENT_TYPE = AttributeKey.valueOf(Constants.ClientType);
@@ -76,6 +79,49 @@ public class SessionManager {
     private static void removeLocalSession(SessionInfo session) {
         SessionSocketContext.remove(session.appId(), session.userId(), session.clientType());
     }
+    // 新增心跳超时处理方法
+    public static void handleHeartbeatTimeout(NioSocketChannel channel) {
+        try {
+            // 原子化状态更新
+            boolean success = updateRedisSessionState(channel);
+            if (success) {
+                SessionSocketContext.removeByChannel(channel);
+                logger.info("心跳超时处理完成, channel={}", channel.id());
+            }
+        } finally {
+            channel.close(); // 确保通道关闭
+        }
+    }
+
+    private static boolean updateRedisSessionState(NioSocketChannel channel) {
+        SessionInfo session = getSessionFromChannel(channel);
+        if (session == null) return false;
+
+        String redisKey = session.appId() + Constants.RedisConstants.USER_SESSION + session.userId();
+        RMap<String, String> sessionMap = RedisManager.getRedissonClient().getMap(redisKey);
+
+        return sessionMap.computeIfPresent(
+                session.clientType().toString(),
+                (k, v) -> {
+                    UserSession userSession = JSON.parseObject(v, UserSession.class);
+                    userSession.setConnectState(UserSession.ConnectState.RECONNECT.getCode());
+                    userSession.setLastActiveTime(System.currentTimeMillis());
+                    return JSON.toJSONString(userSession);
+                }
+        ) != null;
+    }
+
+    private static SessionInfo getSessionFromChannel(NioSocketChannel channel) {
+        String userId = (String) channel.attr(AttributeKey.valueOf(Constants.UserId)).get();
+        Integer appId = (Integer) channel.attr(AttributeKey.valueOf(Constants.AppId)).get();
+        Integer clientType = (Integer) channel.attr(AttributeKey.valueOf(Constants.ClientType)).get();
+
+        if (userId == null || appId == null || clientType == null) {
+            return null;
+        }
+        return new SessionInfo(userId, appId, clientType);
+    }
+
 
     public record SessionInfo(String userId, Integer appId, Integer clientType) {}
 }

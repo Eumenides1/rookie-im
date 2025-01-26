@@ -23,6 +23,7 @@ public class BootStrapConfig {
         private Integer wsPort;
         private Integer workThreadSize;
         private Integer bossThreadSize;
+        private Long heartBeatTime; // 心跳超时时间
 
         private RedisConfig redis;
     }
