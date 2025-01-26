@@ -1,8 +1,8 @@
-package com.rookie.stack.core.tcp.server;
+package com.rookie.stack.core.server;
 
 import com.rookie.stack.core.codec.MessageDecoder;
 import com.rookie.stack.core.config.BootStrapConfig;
-import com.rookie.stack.core.tcp.handler.NettyServerHandler;
+import com.rookie.stack.core.handler.NettyServerHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
@@ -10,7 +10,6 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * @Classname RookieImServer

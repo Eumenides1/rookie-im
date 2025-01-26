@@ -47,3 +47,5 @@ application-dev.properties
 MyBatisGenerate.java
 
 import_users_10000.json
+
+rookie.yaml

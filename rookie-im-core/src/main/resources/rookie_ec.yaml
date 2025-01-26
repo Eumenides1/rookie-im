@@ -1,0 +1,17 @@
+# 配置文件示例
+rookie:
+  tcpPort: 9000
+  wsPort: 1000
+  bossThreadSize: 1
+  workThreadSize: 8
+
+  redis:
+    mode: SINGLE
+    database: 0
+    password: 123456
+    timeout: 3000
+    poolMinIdle: 8
+    pollConnTimeout: 3000
+    pollSize: 10
+    single:
+      address: 127.0.0.1:6379

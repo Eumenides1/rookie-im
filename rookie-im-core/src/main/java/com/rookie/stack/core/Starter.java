@@ -1,7 +1,8 @@
-package com.rookie.stack.core.tcp;
+package com.rookie.stack.core;
 
 import com.rookie.stack.core.config.BootStrapConfig;
-import com.rookie.stack.core.tcp.server.RookieImServer;
+import com.rookie.stack.core.server.RookieImServer;
+import com.rookie.stack.core.utils.redis.RedisManager;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.FileInputStream;
@@ -30,5 +31,6 @@ public class Starter {
         }
         BootStrapConfig bootStrapConfig = yaml.loadAs(fileInputStream, BootStrapConfig.class);
         new RookieImServer(bootStrapConfig.getRookie()).start();
+        RedisManager.init(bootStrapConfig);
     }
 }

@@ -1,5 +1,0 @@
-rookie:
-  tcpPort: 9000
-  wsPort: 1000
-  bossThreadSize: 1
-  workThreadSize: 8
