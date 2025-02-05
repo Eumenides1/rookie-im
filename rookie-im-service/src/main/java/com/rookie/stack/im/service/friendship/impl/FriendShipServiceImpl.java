@@ -2,8 +2,12 @@ package com.rookie.stack.im.service.friendship.impl;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.rookie.stack.common.domain.dto.resp.PageBaseResp;
+import com.rookie.stack.common.exception.BusinessException;
 import com.rookie.stack.common.utils.AssertUtil;
 import com.rookie.stack.im.common.constants.enums.friendship.FriendAllowTypeEnum;
+import com.rookie.stack.im.common.constants.enums.friendship.FriendshipRequestStatusEnum;
+import com.rookie.stack.im.common.constants.enums.user.ImUserStatusEnum;
+import com.rookie.stack.im.common.context.AppIdContext;
 import com.rookie.stack.im.common.exception.friendship.FriendShipErrorEnum;
 import com.rookie.stack.im.common.exception.user.ImUserErrorEnum;
 import com.rookie.stack.im.dao.friendship.ImFriendShipDao;
@@ -11,7 +15,9 @@ import com.rookie.stack.im.dao.friendship.ImFriendShipRequestDao;
 import com.rookie.stack.im.dao.user.ImUserDataDao;
 import com.rookie.stack.im.domain.dto.req.friendship.GetFriendshipRequestReq;
 import com.rookie.stack.im.domain.dto.req.friendship.NewFriendShipReq;
+import com.rookie.stack.im.domain.dto.req.friendship.ProcessRequest;
 import com.rookie.stack.im.domain.dto.resp.friendship.FriendshipRequestData;
+import com.rookie.stack.im.domain.entity.friendship.ImFriendship;
 import com.rookie.stack.im.domain.entity.friendship.ImFriendshipRequest;
 import com.rookie.stack.im.domain.entity.user.ImUserData;
 import com.rookie.stack.im.service.friendship.FriendShipService;
@@ -20,6 +26,7 @@ import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -106,5 +113,75 @@ public class FriendShipServiceImpl implements FriendShipService {
                 .approveStatus(request.getApproveStatus())
                 .createTime(request.getCreatedAt())
                 .build();
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void processFriendshipRequest(ProcessRequest request) {
+        // 1. 获取请求记录
+        ImFriendshipRequest validRequest = getValidRequest(request.getRequestId());
+        // 2. 校验处理权限
+        validateProcessorIdentity(request.getUserId(), validRequest);
+        // 3. 校验用户状态
+        validateUserStatus(validRequest.getRequesterId());
+        // 4. 处理请求
+        if (Objects.equals(request.getAction(), FriendshipRequestStatusEnum.APPROVED.getStatus())) {
+            handleApproveRequest(validRequest);
+        } else {
+            handleRejectRequest(validRequest);
+        }
+    }
+    private void handleRejectRequest(ImFriendshipRequest request) {
+        updateRequestStatus(request, FriendshipRequestStatusEnum.REJECTED.getStatus());
+    }
+    private void updateRequestStatus(ImFriendshipRequest request, int status) {
+        ImFriendshipRequest update = new ImFriendshipRequest();
+        update.setId(request.getId());
+        update.setApproveStatus(status);
+        update.setUpdatedAt(LocalDateTime.now());
+        imFriendShipRequestDao.updateById(update);
+    }
+
+    private void handleApproveRequest(ImFriendshipRequest request) {
+        // 创建双向好友关系
+        createFriendshipRelation(request.getRequesterId(), request.getReceiverId(), request.getAddWording());
+        createFriendshipRelation(request.getReceiverId(), request.getRequesterId(), request.getAddWording());
+        // 更新请求状态
+        updateRequestStatus(request,  FriendshipRequestStatusEnum.APPROVED.getStatus());
+    }
+
+    private void createFriendshipRelation(Long userId, Long friendId, String remark) {
+        if (imFriendShipDao.isFriendShipExists(userId, friendId)) {
+            throw new BusinessException(FriendShipErrorEnum.ALREADY_FRIEND_SHIP);
+        }
+        ImFriendship friendship = new ImFriendship();
+        friendship.setAppId(AppIdContext.getAppId());
+        friendship.setUserId(userId);
+        friendship.setFriendId(friendId);
+        friendship.setRemark(remark);
+        friendship.setCreatedAt(LocalDateTime.now());
+        imFriendShipDao.save(friendship);
+    }
+
+    private void validateUserStatus(Long requesterId) {
+        ImUserData requester = imUserDataDao.getUserInfoById(requesterId);
+        if (requester == null || Objects.equals(requester.getDelFlag(), ImUserStatusEnum.DELETED.getStatus())) {
+            throw new BusinessException(ImUserErrorEnum.USER_NOT_EXISTS);
+        }
+    }
+
+    private ImFriendshipRequest getValidRequest(Long requestId) {
+        ImFriendshipRequest requestById = imFriendShipRequestDao.getRequestById(requestId);
+        AssertUtil.isNotEmpty(requestById,FriendShipErrorEnum.FRIEND_REQUEST_NOT_FOUND);
+        if (!Objects.equals(requestById.getApproveStatus(), FriendshipRequestStatusEnum.PENDING.getStatus())) {
+            throw new BusinessException(FriendShipErrorEnum.FRIEND_REQUEST_PROCESSED);
+        }
+        return requestById;
+    }
+
+    private void validateProcessorIdentity(Long userId, ImFriendshipRequest request) {
+        if (!request.getReceiverId().equals(userId)) {
+            throw new BusinessException(FriendShipErrorEnum.NO_PROCESS_IDENTITY);
+        }
     }
 }

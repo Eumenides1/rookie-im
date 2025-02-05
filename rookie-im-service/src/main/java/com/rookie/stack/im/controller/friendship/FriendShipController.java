@@ -4,16 +4,14 @@ import com.rookie.stack.common.domain.dto.resp.ApiResult;
 import com.rookie.stack.common.domain.dto.resp.PageBaseResp;
 import com.rookie.stack.im.domain.dto.req.friendship.GetFriendshipRequestReq;
 import com.rookie.stack.im.domain.dto.req.friendship.NewFriendShipReq;
+import com.rookie.stack.im.domain.dto.req.friendship.ProcessRequest;
 import com.rookie.stack.im.domain.dto.resp.friendship.FriendshipRequestData;
 import com.rookie.stack.im.service.friendship.FriendShipService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * Name：FriendShipController
@@ -40,5 +38,11 @@ public class FriendShipController {
     public ApiResult<PageBaseResp<FriendshipRequestData>> getFriendShipRequests(@RequestBody @Valid GetFriendshipRequestReq req) {
         PageBaseResp<FriendshipRequestData> friendshipRequestDataPageBaseResp = friendShipService.queryFriendshipRequests(req);
         return ApiResult.success(friendshipRequestDataPageBaseResp);
+    }
+    @PutMapping("/process")
+    @Operation(summary = "处理好友申请接口", description = "处理好友申请")
+    public ApiResult<Void> processFriendRequest(@RequestBody @Valid ProcessRequest request) {
+        friendShipService.processFriendshipRequest(request);
+        return ApiResult.success();
     }
 }
