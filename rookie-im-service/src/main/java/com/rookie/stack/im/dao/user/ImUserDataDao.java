@@ -9,6 +9,7 @@ import com.rookie.stack.im.common.constants.enums.user.ImUserStatusEnum;
 import com.rookie.stack.im.common.context.AppIdContext;
 import com.rookie.stack.im.domain.dto.req.user.GetUserListPageReq;
 import com.rookie.stack.im.domain.dto.req.user.UpdateUserInfoReq;
+import com.rookie.stack.im.domain.entity.friendship.ImFriendshipRequest;
 import com.rookie.stack.im.domain.entity.user.ImUserData;
 import com.rookie.stack.im.mapper.user.ImUserDataMapper;
 import jakarta.annotation.Resource;
@@ -16,7 +17,10 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Name：ImUserDataDao
@@ -79,6 +83,19 @@ public class ImUserDataDao extends ServiceImpl<ImUserDataMapper, ImUserData> {
         });
 
         return imUserDataMapper.selectList(queryWrapper);
+    }
+
+    public Map<Long, ImUserData> queryRequesterUserInfo(List<ImFriendshipRequest> requests) {
+        List<Long> requesterIds = requests.stream()
+                .map(ImFriendshipRequest::getRequesterId)
+                .collect(Collectors.toList());
+
+        QueryWrapper<ImUserData> wrapper = new QueryWrapper<>();
+        wrapper.in("user_id", requesterIds)
+                .eq("app_id", AppIdContext.getAppId());
+
+        return imUserDataMapper.selectList(wrapper).stream()
+                .collect(Collectors.toMap(ImUserData::getUserId, Function.identity()));
     }
 
 }

@@ -1,6 +1,7 @@
 package com.rookie.stack.im.service.friendship.impl;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.rookie.stack.common.domain.dto.resp.PageBaseResp;
 import com.rookie.stack.common.utils.AssertUtil;
 import com.rookie.stack.im.common.constants.enums.friendship.FriendAllowTypeEnum;
 import com.rookie.stack.im.common.exception.friendship.FriendShipErrorEnum;
@@ -20,6 +21,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * Name：FriendShipServiceImpl
@@ -72,15 +76,35 @@ public class FriendShipServiceImpl implements FriendShipService {
     }
 
     @Override
-    public List<FriendshipRequestData> queryFriendshipRequests(GetFriendshipRequestReq req) {
-
+    public PageBaseResp<FriendshipRequestData> queryFriendshipRequests(GetFriendshipRequestReq req) {
         IPage<ImFriendshipRequest> pendingRequests = imFriendShipRequestDao.findPendingRequests(req);
-
-        for (ImFriendshipRequest imFriendshipRequest : pendingRequests.getRecords()) {
-            imUserDataDao.getUserInfoById(imFriendshipRequest.getReceiverId());
-
+        if (pendingRequests.getRecords().isEmpty()) {
+            return null;
         }
+        // 3. 批量查询相关用户信息
+        Map<Long, ImUserData> userMap = imUserDataDao.queryRequesterUserInfo(pendingRequests.getRecords());
+        List<FriendshipRequestData> collect = pendingRequests.getRecords().stream()
+                .map(request -> buildFriendshipRequestData(request, userMap))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        return PageBaseResp.init(pendingRequests, collect);
+    }
 
-        return List.of();
+    private FriendshipRequestData buildFriendshipRequestData(
+            ImFriendshipRequest request,
+            Map<Long, ImUserData> userMap
+    ) {
+        ImUserData user = userMap.get(request.getRequesterId());
+        if (user == null) return null; // 或记录日志告警
+
+        return FriendshipRequestData.builder()
+                .userId(user.getUserId())
+                .nickName(user.getNickName())
+                .photo(user.getPhoto())
+                .extra(user.getExtra())
+                .addWording(request.getAddWording())
+                .approveStatus(request.getApproveStatus())
+                .createTime(request.getCreatedAt())
+                .build();
     }
 }

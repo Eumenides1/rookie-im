@@ -1,7 +1,10 @@
 package com.rookie.stack.im.controller.friendship;
 
 import com.rookie.stack.common.domain.dto.resp.ApiResult;
+import com.rookie.stack.common.domain.dto.resp.PageBaseResp;
+import com.rookie.stack.im.domain.dto.req.friendship.GetFriendshipRequestReq;
 import com.rookie.stack.im.domain.dto.req.friendship.NewFriendShipReq;
+import com.rookie.stack.im.domain.dto.resp.friendship.FriendshipRequestData;
 import com.rookie.stack.im.service.friendship.FriendShipService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -31,5 +34,11 @@ public class FriendShipController {
     public ApiResult<Long> newFriendShipRequest(@RequestBody @Valid NewFriendShipReq req) {
         Long requestId = friendShipService.newFriendshipRequest(req);
         return ApiResult.success(requestId);
+    }
+    @PostMapping("/get")
+    @Operation(summary = "获取好友申请信息列表接口",description = "分页获取好友申请信息列表")
+    public ApiResult<PageBaseResp<FriendshipRequestData>> getFriendShipRequests(@RequestBody @Valid GetFriendshipRequestReq req) {
+        PageBaseResp<FriendshipRequestData> friendshipRequestDataPageBaseResp = friendShipService.queryFriendshipRequests(req);
+        return ApiResult.success(friendshipRequestDataPageBaseResp);
     }
 }

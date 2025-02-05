@@ -35,9 +35,9 @@ public class ImFriendShipRequestDao extends ServiceImpl<ImFriendshipRequestMappe
         Page page = req.plusPage();
         LambdaQueryWrapper<ImFriendshipRequest> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(ImFriendshipRequest::getReceiverId, req.getUserId());
+        queryWrapper.eq(ImFriendshipRequest::getAppId, AppIdContext.getAppId());
         queryWrapper.orderByDesc(ImFriendshipRequest::getCreatedAt);
         return this.page(page, queryWrapper);
     }
-
 
 }

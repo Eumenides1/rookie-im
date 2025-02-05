@@ -1,6 +1,9 @@
 package com.rookie.stack.im.domain.dto.resp.friendship;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
@@ -11,9 +14,12 @@ import java.time.LocalDateTime;
  * Description: 用户请求
  */
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class FriendshipRequestData {
 
-    private Integer userId;
+    private Long userId;
 
     private String nickName;
 
@@ -21,7 +27,7 @@ public class FriendshipRequestData {
 
     private String extra;
 
-    private Integer addWording;
+    private String addWording;
 
     private Integer approveStatus;
 
