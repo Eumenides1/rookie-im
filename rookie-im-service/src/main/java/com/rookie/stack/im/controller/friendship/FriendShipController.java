@@ -5,7 +5,9 @@ import com.rookie.stack.common.domain.dto.resp.PageBaseResp;
 import com.rookie.stack.im.domain.dto.req.friendship.GetFriendshipRequestReq;
 import com.rookie.stack.im.domain.dto.req.friendship.NewFriendShipReq;
 import com.rookie.stack.im.domain.dto.req.friendship.ProcessRequest;
+import com.rookie.stack.im.domain.dto.req.friendship.RelationshipCheckReq;
 import com.rookie.stack.im.domain.dto.resp.friendship.FriendshipRequestData;
+import com.rookie.stack.im.domain.dto.resp.friendship.RelationshipCheckResult;
 import com.rookie.stack.im.service.friendship.FriendShipService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -44,5 +46,10 @@ public class FriendShipController {
     public ApiResult<Void> processFriendRequest(@RequestBody @Valid ProcessRequest request) {
         friendShipService.processFriendshipRequest(request);
         return ApiResult.success();
+    }
+    @PostMapping("/check")
+    @Operation(summary = "批量校验好友关系接口",description = "批量校验好友关系接口")
+    public ApiResult<RelationshipCheckResult> checkRelationships( @RequestBody @Valid RelationshipCheckReq req){
+        return ApiResult.success(friendShipService.checkRelationships(req));
     }
 }

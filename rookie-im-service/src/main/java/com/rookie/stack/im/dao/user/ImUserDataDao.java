@@ -98,4 +98,7 @@ public class ImUserDataDao extends ServiceImpl<ImUserDataMapper, ImUserData> {
                 .collect(Collectors.toMap(ImUserData::getUserId, Function.identity()));
     }
 
+    public List<ImUserData> getUserDataBatch(List<Long> userIds) {
+        return imUserDataMapper.selectByIds(userIds);
+    }
 }

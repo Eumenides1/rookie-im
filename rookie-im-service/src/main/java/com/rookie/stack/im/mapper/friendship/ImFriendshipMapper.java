@@ -2,8 +2,11 @@ package com.rookie.stack.im.mapper.friendship;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.rookie.stack.im.domain.entity.friendship.ImFriendship;
+import com.rookie.stack.im.domain.vo.RelationshipVO;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+
+import java.util.List;
 
 /**
  * <p>
@@ -29,4 +32,5 @@ public interface ImFriendshipMapper extends BaseMapper<ImFriendship> {
                                       @Param("friendId") Long friendId,
                                       @Param("status") int status);
 
+    List<RelationshipVO> selectRelationships(Long userId, Integer appId, List<Long> targetIds);
 }

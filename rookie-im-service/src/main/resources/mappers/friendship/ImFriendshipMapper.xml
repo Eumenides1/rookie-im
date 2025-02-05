@@ -1,5 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.rookie.stack.im.mapper.friendship.ImFriendshipMapper">
-
+    <!-- Mapper XML -->
+    <select id="selectRelationships" resultType="com.rookie.stack.im.domain.vo.RelationshipVO">
+        SELECT
+        f.friend_id AS targetUserId,
+        1 AS exist,
+        CASE WHEN rf.friend_id IS NOT NULL THEN 1 ELSE 0 END AS reverseExist,
+        CASE
+        WHEN rf.friend_id IS NOT NULL THEN 2
+        ELSE 1
+        END AS relationStatus,
+        f.remark AS remark,
+        f.created_at AS addTime
+        FROM im_friendship f
+        LEFT JOIN im_friendship rf
+        ON f.app_id = rf.app_id
+        AND f.friend_id = rf.user_id
+        AND rf.friend_id = #{userId}
+        WHERE f.app_id = #{appId}
+        AND f.user_id = #{userId}
+        AND f.friend_id IN
+        <foreach item="id" collection="targetIds" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
 </mapper>

@@ -16,10 +16,13 @@ import com.rookie.stack.im.dao.user.ImUserDataDao;
 import com.rookie.stack.im.domain.dto.req.friendship.GetFriendshipRequestReq;
 import com.rookie.stack.im.domain.dto.req.friendship.NewFriendShipReq;
 import com.rookie.stack.im.domain.dto.req.friendship.ProcessRequest;
+import com.rookie.stack.im.domain.dto.req.friendship.RelationshipCheckReq;
 import com.rookie.stack.im.domain.dto.resp.friendship.FriendshipRequestData;
+import com.rookie.stack.im.domain.dto.resp.friendship.RelationshipCheckResult;
 import com.rookie.stack.im.domain.entity.friendship.ImFriendship;
 import com.rookie.stack.im.domain.entity.friendship.ImFriendshipRequest;
 import com.rookie.stack.im.domain.entity.user.ImUserData;
+import com.rookie.stack.im.domain.vo.RelationshipVO;
 import com.rookie.stack.im.service.friendship.FriendShipService;
 import com.rookie.stack.im.service.friendship.adapter.FriendshipRequestAdapter;
 import jakarta.annotation.Resource;
@@ -27,6 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -131,6 +135,55 @@ public class FriendShipServiceImpl implements FriendShipService {
             handleRejectRequest(validRequest);
         }
     }
+
+    @Override
+    public RelationshipCheckResult checkRelationships(RelationshipCheckReq req) {
+        // 1. 参数校验
+        validateRequest(req);
+        // 2. 批量获取关系数据
+        List<RelationshipVO> relationships = imFriendShipDao.getBatchRelationships(
+                req.getUserId(),
+                req.getTargetUserIds()
+        );
+        // 3. 执行校验逻辑
+        return doCheck(relationships, req.getCheckMode(), req.getExtraConditions());
+    }
+
+    private RelationshipCheckResult doCheck(List<RelationshipVO> relationships,
+                                            RelationshipCheckReq.CheckMode mode,
+                                            Map<String, Object> conditions) {
+        RelationshipCheckResult result = new RelationshipCheckResult();
+        List<RelationshipCheckResult.SingleCheckResult> resultList = new ArrayList<>();
+        relationships.forEach(rel -> {
+            boolean isValid = switch (mode) {
+                case UNIDIRECTIONAL -> rel.getExist();
+                case BIDIRECTIONAL -> rel.getExist() && rel.getReverseExist();
+                default -> false;
+            };
+            RelationshipCheckResult.SingleCheckResult singleCheckResult = new RelationshipCheckResult.SingleCheckResult();
+            singleCheckResult.setTargetUserId(rel.getTargetUserId());
+            singleCheckResult.setIsValid(isValid);
+            singleCheckResult.setRelationStatus(rel.getRelationStatus());
+            singleCheckResult.setRemark(rel.getRemark());
+            singleCheckResult.setAddTime(rel.getAddTime());
+            resultList.add(singleCheckResult);
+        });
+        result.setResults(resultList);
+        return result;
+    }
+
+
+    private void validateRequest(RelationshipCheckReq req) {
+        if (req.getTargetUserIds().contains(req.getUserId())) {
+            throw new BusinessException("不能校验与自身的关系");
+        }
+        // 校验目标用户有效性
+        List<ImUserData> users = imUserDataDao.getUserDataBatch(req.getTargetUserIds());
+        if (users.size() != req.getTargetUserIds().size()) {
+            throw new BusinessException("包含无效用户ID");
+        }
+    }
+
     private void handleRejectRequest(ImFriendshipRequest request) {
         updateRequestStatus(request, FriendshipRequestStatusEnum.REJECTED.getStatus());
     }
