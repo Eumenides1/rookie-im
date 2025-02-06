@@ -153,6 +153,7 @@ public class FriendShipServiceImpl implements FriendShipService {
                                             RelationshipCheckReq.CheckMode mode,
                                             Map<String, Object> conditions) {
         RelationshipCheckResult result = new RelationshipCheckResult();
+        // TODO 待优化
         List<RelationshipCheckResult.SingleCheckResult> resultList = new ArrayList<>();
         relationships.forEach(rel -> {
             boolean isValid = switch (mode) {

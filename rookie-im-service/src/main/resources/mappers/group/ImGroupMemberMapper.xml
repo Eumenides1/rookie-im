@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rookie.stack.im.mapper.group.ImGroupMemberMapper">
+
+    <resultMap id="BaseResultMap" type="com.rookie.stack.im.domain.entity.group.ImGroupMember">
+            <id property="groupMemberId" column="group_member_id" jdbcType="BIGINT"/>
+            <result property="groupId" column="group_id" jdbcType="BIGINT"/>
+            <result property="appId" column="app_id" jdbcType="INTEGER"/>
+            <result property="memberId" column="member_id" jdbcType="BIGINT"/>
+            <result property="role" column="role" jdbcType="TINYINT"/>
+            <result property="lastSpeakTime" column="last_speak_time" jdbcType="BIGINT"/>
+            <result property="isMuted" column="is_muted" jdbcType="TINYINT"/>
+            <result property="alias" column="alias" jdbcType="VARCHAR"/>
+            <result property="joinTime" column="join_time" jdbcType="TIMESTAMP"/>
+            <result property="leaveTime" column="leave_time" jdbcType="TIMESTAMP"/>
+            <result property="joinType" column="join_type" jdbcType="VARCHAR"/>
+            <result property="extra" column="extra" jdbcType="OTHER"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        group_member_id,group_id,app_id,
+        member_id,role,last_speak_time,
+        is_muted,alias,join_time,
+        leave_time,join_type,extra
+    </sql>
+</mapper>
