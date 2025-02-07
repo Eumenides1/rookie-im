@@ -1,0 +1,7 @@
+main:
+  push:
+    - docker:
+         build: ./.ide/Dockerfile
+      stages:
+        - name: echo
+          script: echo "hello world"
