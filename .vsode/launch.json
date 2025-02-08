@@ -1,0 +1,11 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Launch File",
+            "request": "launch",
+            "mainClass": "com.rookie.stack.im.Application"
+        }
+    ]
+}
