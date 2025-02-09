@@ -26,6 +26,8 @@ public class BootStrapConfig {
         private Long heartBeatTime; // 心跳超时时间
 
         private RedisConfig redis;
+
+        private RabbitMq rabbitmq;
     }
 
     @Data
@@ -87,5 +89,20 @@ public class BootStrapConfig {
     @Data
     public static class ClusterConfig {
         private String nodes; // 格式: "host1:port1,host2:port2,..."
+    }
+
+    /**
+     * RabbitMQ 配置
+     */
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class RabbitMq {
+         private String host;
+         private Integer port;
+         private String virtualHost;
+         private String username;
+         private String password;
     }
 }

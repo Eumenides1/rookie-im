@@ -1,7 +1,9 @@
 package com.rookie.stack.core;
 
 import com.rookie.stack.core.config.BootStrapConfig;
+import com.rookie.stack.core.reciver.MessageReciver;
 import com.rookie.stack.core.server.RookieImServer;
+import com.rookie.stack.core.utils.mq.MqFactory;
 import com.rookie.stack.core.utils.redis.RedisManager;
 import org.yaml.snakeyaml.Yaml;
 
@@ -32,5 +34,7 @@ public class Starter {
         BootStrapConfig bootStrapConfig = yaml.loadAs(fileInputStream, BootStrapConfig.class);
         new RookieImServer(bootStrapConfig.getRookie()).start();
         RedisManager.init(bootStrapConfig);
+        MqFactory.init(bootStrapConfig.getRookie().getRabbitmq());
+        MessageReciver.init();
     }
 }
