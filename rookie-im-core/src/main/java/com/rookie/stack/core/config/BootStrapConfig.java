@@ -28,6 +28,8 @@ public class BootStrapConfig {
         private RedisConfig redis;
 
         private RabbitMq rabbitmq;
+
+        private ZkConfig zkConfig;
     }
 
     @Data
@@ -104,5 +106,11 @@ public class BootStrapConfig {
          private String virtualHost;
          private String username;
          private String password;
+    }
+
+    @Data
+    public static class ZkConfig {
+        private String zkAddr;
+        private Integer zkConnectTimeout;
     }
 }

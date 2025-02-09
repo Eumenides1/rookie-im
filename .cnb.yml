@@ -1,7 +1,14 @@
 main:
   push:
-    - docker:
-         build: ./.ide/Dockerfile
+    - services:
+        - docker
+      imports: https://cnb.cool/rookie-stack/keys/-/blob/main/git_token.yml
       stages:
-        - name: echo
-          script: echo "hello world"
+        - name: sync to github
+          image: tencentcom/git-sync
+          settings:
+            target_url: https://github.com/Eumenides1/rookie-im.git
+            auth_type: https
+            username: $GIT_USERNAME
+            password: $EUMENIDES_TOKEN
+            branch: main

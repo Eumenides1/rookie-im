@@ -16,3 +16,14 @@ rookie:
     pollSize: 10
     single:
       address: 127.0.0.1:6379
+
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    virtualHost: /
+    username: admin
+    password: admin
+
+  zkConfig:
+    zkAddr: 127.0.0.1:2181
+    zkConnectTimeout: 5000
